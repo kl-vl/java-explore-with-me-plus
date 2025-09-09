@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   stats-server:
     container_name: stats-server
@@ -30,8 +28,9 @@ services:
       retries: 10
 
   main-service:
-    build: .  # сборка из текущей директории
-    container_name: main-service
+    build:
+      context: main-service
+      dockerfile: Dockerfile
     ports:
       - "8080:8080"
     depends_on:
