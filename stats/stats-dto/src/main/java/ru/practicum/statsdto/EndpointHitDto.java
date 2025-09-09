@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class EndpointHit {
+public class EndpointHitDto {
 
     // TODO вроде не требуется для вывода bkb заполнения
     //private Long id;

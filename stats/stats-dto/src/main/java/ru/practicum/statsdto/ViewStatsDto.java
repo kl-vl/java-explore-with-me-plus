@@ -11,7 +11,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ViewStats {
+public class ViewStatsDto {
     private String app;
     private String uri;
     private Long hits;
