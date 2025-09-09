@@ -20,6 +20,13 @@
 	<properties>
 		<java.version>21</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<lombok.version>1.18.38</lombok.version>
+		<jakarta.validation.version>3.0.2</jakarta.validation.version>
+<!--		<main-service.version>0.0.1-SNAPSHOT</main-service.version>-->
+<!--		<stats.version>0.0.1-SNAPSHOT</stats.version>-->
+<!--		<stats-dto.version>0.0.1-SNAPSHOT</stats-dto.version>-->
+<!--		<stats-server.version>0.0.1-SNAPSHOT</stats-server.version>-->
+<!--		<stats-client.version>0.0.1-SNAPSHOT</stats-client.version>-->
 	</properties>
 
 	<modules>
@@ -27,7 +34,23 @@
 		<module>main-service</module>
 	</modules>
 
-	<!-- В корневом pom не должно быть dependencies в этом проекте-->
+	<!-- TODO В корневом pom не должно быть dependencies в этом проекте (старший наставник)-->
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.projectlombok</groupId>
+				<artifactId>lombok</artifactId>
+				<version>${lombok.version}</version>
+				<optional>true</optional>
+			</dependency>
+			<dependency>
+				<groupId>jakarta.validation</groupId>
+				<artifactId>jakarta.validation-api</artifactId>
+				<version>${jakarta.validation.version}</version>
+				<optional>true</optional>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 
 	<build>
 		<pluginManagement>
