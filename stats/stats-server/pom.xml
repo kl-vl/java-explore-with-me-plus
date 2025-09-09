@@ -13,10 +13,6 @@
     <name>stats-server</name>
     <description>Statistics server</description>
 
-    <properties>
-        <java.version>21</java.version>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>ru.practicum</groupId>

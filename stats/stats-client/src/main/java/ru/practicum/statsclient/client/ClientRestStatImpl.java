@@ -2,7 +2,7 @@ package ru.practicum.statsclient.client;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClient;
-import org.springframework.web.util.UriBuilder;
+import org.springframework.web.util.UriComponentsBuilder;
 import ru.practicum.statsdto.EndpointHitDto;
 import ru.practicum.statsdto.ViewStatsDto;
 
@@ -33,21 +33,21 @@ public class ClientRestStatImpl implements ClientRestStat {
 
     @Override
     public List<ViewStatsDto> getStat(LocalDateTime start, LocalDateTime end, String[] uris, boolean unique) {
+        URI uri = buildStatsUri(start, end, uris, unique);
+
         ResponseEntity<ViewStatsDto[]> responseEntity = restClient.get()
-                .uri(uriBuilder -> buildStatsUri(uriBuilder, start, end, uris, unique))
+                .uri(uri)
                 .retrieve()
                 .toEntity(ViewStatsDto[].class);
 
         return responseEntity.getBody() != null ? Arrays.asList(responseEntity.getBody()) : Collections.emptyList();
     }
 
-    private URI buildStatsUri(UriBuilder uriBuilder,
-                              LocalDateTime start,
+    private URI buildStatsUri(LocalDateTime start,
                               LocalDateTime end,
                               String[] uris,
                               boolean unique) {
-        UriBuilder builder = uriBuilder
-                .path("/stats")
+        UriComponentsBuilder builder = UriComponentsBuilder.fromPath("/stats")
                 .queryParam("start", formatDateTime(start))
                 .queryParam("end", formatDateTime(end))
                 .queryParam("unique", unique);
@@ -58,7 +58,7 @@ public class ClientRestStatImpl implements ClientRestStat {
             }
         }
 
-        return builder.build();
+        return builder.build().toUri();
     }
 
     private String formatDateTime(LocalDateTime dateTime) {
