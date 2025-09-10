@@ -1,10 +1,8 @@
-package ru.practicum.statsclient.client;
+package ru.practicum.stats;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.util.UriComponentsBuilder;
-import ru.practicum.statsdto.EndpointHitDto;
-import ru.practicum.statsdto.ViewStatsDto;
 
 import java.net.URI;
 import java.time.LocalDateTime;
@@ -23,12 +21,12 @@ public class ClientRestStatImpl implements ClientRestStat {
     }
 
     @Override
-    public EndpointHitDto addStat(EndpointHitDto dto) {
+    public Boolean addStat(EndpointHitDto dto) {
         return restClient.post()
                 .uri("/hit")
                 .body(dto)
                 .retrieve()
-                .body(EndpointHitDto.class);
+                .body(Boolean.class);
     }
 
     @Override

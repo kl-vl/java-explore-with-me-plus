@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
-import ru.practicum.statsdto.ErrorResponseDto;
+import ru.practicum.stats.ErrorResponseDto;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;

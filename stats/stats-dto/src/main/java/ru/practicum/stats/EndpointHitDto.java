@@ -1,4 +1,4 @@
-package ru.practicum.statsdto;
+package ru.practicum.stats;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotBlank;
@@ -9,7 +9,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import ru.practicum.statsdto.validate.ValidIpAddress;
+import ru.practicum.stats.validate.ValidIpAddress;
 
 import java.time.LocalDateTime;
 

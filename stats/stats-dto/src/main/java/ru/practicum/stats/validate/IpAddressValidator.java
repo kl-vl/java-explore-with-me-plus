@@ -1,4 +1,4 @@
-package ru.practicum.statsdto.validate;
+package ru.practicum.stats.validate;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
