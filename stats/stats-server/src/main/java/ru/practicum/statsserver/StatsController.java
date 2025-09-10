@@ -1,5 +1,6 @@
 package ru.practicum.statsserver;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -23,16 +24,16 @@ public class StatsController {
     private final StatsService service;
 
     @GetMapping("/stats")
-    public List<ViewStatsDto> getStats(@RequestParam LocalDateTime start,
-                                       @RequestParam LocalDateTime end,
-                                       @RequestParam(required = false) String[] uris,
-                                       @RequestParam(required = false, defaultValue = "false") Boolean unique) {
+    public List<ViewStatsDto> getStats(@Valid @RequestParam LocalDateTime start,
+                                       @Valid @RequestParam LocalDateTime end,
+                                       @Valid @RequestParam(required = false) String[] uris,
+                                       @Valid @RequestParam(required = false, defaultValue = "false") Boolean unique) {
         return service.getStat(start, end, uris, unique);
     }
 
     @PostMapping("/hit")
     @ResponseStatus(HttpStatus.CREATED)
-    public boolean saveHit(@RequestBody EndpointHitDto endpointHitDto) {
+    public boolean saveHit(@Valid @RequestBody EndpointHitDto endpointHitDto) {
         try {
             service.addStat(endpointHitDto);
             return true;
