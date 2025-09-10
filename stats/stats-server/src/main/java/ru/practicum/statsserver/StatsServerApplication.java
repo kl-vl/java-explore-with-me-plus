@@ -4,8 +4,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-//@ComponentScan(basePackages = {
-//        "ru.practicum.statsclient"
+//@SpringBootApplication(scanBasePackages = {
+//        "ru.practicum.statsserver",
+//        "ru.practicum.statsdto"
 //})
 public class StatsServerApplication {
 

@@ -3,6 +3,7 @@ package ru.practicum.statsserver;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,10 +25,10 @@ public class StatsController {
     private final StatsService service;
 
     @GetMapping("/stats")
-    public List<ViewStatsDto> getStats(@Valid @RequestParam LocalDateTime start,
-                                       @Valid @RequestParam LocalDateTime end,
-                                       @Valid @RequestParam(required = false) String[] uris,
-                                       @Valid @RequestParam(required = false, defaultValue = "false") Boolean unique) {
+    public List<ViewStatsDto> getStats(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime start,
+                                       @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime end,
+                                       @RequestParam(required = false, defaultValue = "") String[] uris,
+                                       @RequestParam(required = false, defaultValue = "false") Boolean unique) {
         return service.getStat(start, end, uris, unique);
     }
 
@@ -38,7 +39,7 @@ public class StatsController {
             service.addStat(endpointHitDto);
             return true;
         } catch (Exception e) {
-            log.warn("Save hint uri = {} from ip = {} exception {}",
+            log.warn("Save hit uri = {} from ip = {} exception {}",
                     endpointHitDto.getUri(),
                     endpointHitDto.getIp(),
                     e.getMessage(),
