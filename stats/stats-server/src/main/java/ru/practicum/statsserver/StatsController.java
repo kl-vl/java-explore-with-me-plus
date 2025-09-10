@@ -1,6 +1,7 @@
 package ru.practicum.statsserver;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -11,32 +12,37 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.practicum.statsdto.EndpointHitDto;
 import ru.practicum.statsdto.ViewStatsDto;
 
-import java.util.Collection;
-import java.util.Collections;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@Slf4j
 public class StatsController {
 
-    //private final StatService statService;
+    private final StatsService service;
 
     @GetMapping("/stats")
-    public List<ViewStatsDto> getStats(@RequestParam String start,
-                                       @RequestParam String end,
-                                       @RequestParam(required = false) List<String> uris,
+    public List<ViewStatsDto> getStats(@RequestParam LocalDateTime start,
+                                       @RequestParam LocalDateTime end,
+                                       @RequestParam(required = false) String[] uris,
                                        @RequestParam(required = false, defaultValue = "false") Boolean unique) {
-        // TODO реализация
-        //List<ViewStatsDto> stats = statService.getStat(start, end, uris, unique);
-        //return stats;
-        return Collections.emptyList();
+        return service.getStat(start, end, uris, unique);
     }
 
     @PostMapping("/hit")
     @ResponseStatus(HttpStatus.CREATED)
     public boolean saveHit(@RequestBody EndpointHitDto endpointHitDto) {
-        // TODO реализация
-        // statService.addStat(endpointHitDto);
+        try {
+            service.addStat(endpointHitDto);
+            return true;
+        } catch (Exception e) {
+            log.warn("Save hint uri = {} from ip = {} exception {}",
+                    endpointHitDto.getUri(),
+                    endpointHitDto.getIp(),
+                    e.getMessage(),
+                    e);
+        }
         return false;
     }
 }
