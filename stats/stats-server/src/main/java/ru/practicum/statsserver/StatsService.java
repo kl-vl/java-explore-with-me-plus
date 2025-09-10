@@ -13,6 +13,6 @@ public interface StatsService {
     @Transactional
     boolean addStat(EndpointHitDto endpointHitDto);
 
-    List<ViewStatsDto> getStat(LocalDateTime start, LocalDateTime end, String[] uris, Boolean unique);
+    List<ViewStatsDto> getStat(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique);
 
 }

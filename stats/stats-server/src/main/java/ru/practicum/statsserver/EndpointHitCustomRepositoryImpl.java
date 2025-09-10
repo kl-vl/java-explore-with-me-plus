@@ -22,7 +22,7 @@ public class EndpointHitCustomRepositoryImpl implements EndpointHitCustomReposit
     private final EntityManager entityManager;
 
     @Override
-    public List<ViewStatsDto> getViewStats(String[] uris, LocalDateTime start, LocalDateTime end, boolean unique) {
+    public List<ViewStatsDto> getViewStats(List<String> uris, LocalDateTime start, LocalDateTime end, boolean unique) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<ViewStatsDto> query = cb.createQuery(ViewStatsDto.class);
         Root<EndpointHitEntity> root = query.from(EndpointHitEntity.class);
@@ -36,8 +36,8 @@ public class EndpointHitCustomRepositoryImpl implements EndpointHitCustomReposit
         List<Predicate> predicates = new ArrayList<>();
         predicates.add(cb.between(root.get("timestamp"), start, end));
 
-        if (uris != null && uris.length > 0) {
-            predicates.add(root.get("uri").in((Object[]) uris));
+        if (uris != null && !uris.isEmpty()) {
+            predicates.add(root.get("uri").in(uris));
         }
         query.where(predicates.toArray(new Predicate[0]));
 
