@@ -10,10 +10,6 @@ import java.util.Map;
 public class ErrorResponseDto {
     private final String message;
     private final String error;
-/*
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    private final LocalDateTime timestamp;
-*/
     private final Map<String, String> details;
 
 }
