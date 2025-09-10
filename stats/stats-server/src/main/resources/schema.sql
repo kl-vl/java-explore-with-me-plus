@@ -4,12 +4,10 @@ CREATE TABLE IF NOT EXISTS endpoint_hits
     app           VARCHAR(255)                            NOT NULL,
     uri           VARCHAR(512)                            NOT NULL,
     ip            VARCHAR(45)                             NOT NULL,
-    -- TODO решить как лучше хранить (UTC со смещением например)
     hit_timestamp TIMESTAMP WITHOUT TIME ZONE             NOT NULL
 );
 
 CREATE INDEX IF NOT EXISTS idx_endpoint_hits_ip ON endpoint_hits (ip);
 CREATE INDEX IF NOT EXISTS idx_endpoint_hits_timestamp ON endpoint_hits (hit_timestamp);
-CREATE INDEX IF NOT EXISTS idx_endpoint_hits_app_uri ON endpoint_hits (app, uri);
--- TODO дальше смотреть нужно запросы
---CREATE INDEX IF NOT EXISTS idx_endpoint_hits_uri ON endpoint_hits(uri);
+CREATE INDEX IF NOT EXISTS idx_endpoint_hits_app ON endpoint_hits (app);
+CREATE INDEX IF NOT EXISTS idx_endpoint_hits_uri ON endpoint_hits(uri);

@@ -1,12 +1,11 @@
-package ru.practicum.statsserver;
+package ru.practicum.stats.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.springframework.context.annotation.Primary;
-import ru.practicum.statsdto.EndpointHitDto;
+import ru.practicum.stats.EndpointHitDto;
+import ru.practicum.stats.model.EndpointHitEntity;
 
 @Mapper(componentModel = "spring")
-@Primary
 public interface EndpointHitMapper {
 
     @Mapping(target = "id", ignore = true)

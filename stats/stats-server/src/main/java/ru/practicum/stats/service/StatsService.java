@@ -1,8 +1,8 @@
-package ru.practicum.statsserver;
+package ru.practicum.stats.service;
 
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.statsdto.EndpointHitDto;
-import ru.practicum.statsdto.ViewStatsDto;
+import ru.practicum.stats.EndpointHitDto;
+import ru.practicum.stats.ViewStatsDto;
 
 import java.time.LocalDateTime;
 import java.util.List;

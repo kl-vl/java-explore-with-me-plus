@@ -10,14 +10,10 @@ import java.net.UnknownHostException;
 @RequiredArgsConstructor()
 public class IpAddressValidator implements ConstraintValidator<ValidIpAddress, String> {
 
-//    @Override
-//    public void initialize(ValidIpAddress constraintAnnotation) {
-//    }
-
     @Override
     public boolean isValid(String ip, ConstraintValidatorContext context) {
         if (ip == null) {
-            return true; // Используйте @NotNull для обязательных полей
+            return true;
         }
 
         if (ip.trim().isEmpty()) {

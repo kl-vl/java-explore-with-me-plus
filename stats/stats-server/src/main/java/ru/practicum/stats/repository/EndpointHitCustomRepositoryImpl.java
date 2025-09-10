@@ -1,4 +1,4 @@
-package ru.practicum.statsserver;
+package ru.practicum.stats.repository;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -8,7 +8,8 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-import ru.practicum.statsdto.ViewStatsDto;
+import ru.practicum.stats.model.EndpointHitEntity;
+import ru.practicum.stats.ViewStatsDto;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
