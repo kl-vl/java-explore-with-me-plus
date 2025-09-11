@@ -70,18 +70,15 @@ class ClientRestStatImplIntegrationTest {
     @Test
     void getStat_shouldSendCorrectGetRequestAndParseResponse() throws InterruptedException {
         String responseBody = """
-                 [
-                     {
-                         "app": "ewm-main-service",
+                 [{
+                        app": "ewm-main-service",
                          "uri": "/events/1",\s
                          "hits": 15
-                     },
-                     {
+                     }, {
                          "app": "ewm-main-service",
                          "uri": "/events/2",
                          "hits": 8
-                     }
-                 ]
+                     }]
                 \s""";
 
         mockWebServer.enqueue(new MockResponse()
