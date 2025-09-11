@@ -68,7 +68,7 @@ class ClientRestStatImplIntegrationTest {
     }
 
     @Test
-    void getStat_shouldSendCorrectGetRequestAndParseResponse() throws InterruptedException {
+    void getStatShouldSendCorrectGetRequestAndParseResponse() throws InterruptedException {
         String responseBody = """
                  [{
                         app": "ewm-main-service",
