@@ -8,7 +8,7 @@
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <groupId>ru.yandex.practicum</groupId>
+  <groupId>ru.yandex.practicum</groupId>
     <artifactId>main-service</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>main-service</name>
