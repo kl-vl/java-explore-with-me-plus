@@ -27,5 +27,6 @@ target/
 mvnw
 mvnw.cmd
 maven-wrapper.properties
+amplicode.xml
 
 
