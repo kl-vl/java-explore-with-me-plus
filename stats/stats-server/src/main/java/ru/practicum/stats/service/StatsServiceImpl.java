@@ -5,9 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.stats.EndpointHitDto;
+import ru.practicum.stats.model.EndpointHitEntity;
 import ru.practicum.stats.ViewStatsDto;
 import ru.practicum.stats.mapper.EndpointHitMapper;
-import ru.practicum.stats.model.EndpointHitEntity;
 import ru.practicum.stats.repository.StatsServerRepository;
 
 import java.time.LocalDateTime;
@@ -19,6 +19,7 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class StatsServiceImpl implements StatsService {
     private final StatsServerRepository statsServerRepository;
+    //@Qualifier("endpointHitMapperImpl")
     private final EndpointHitMapper endpointHitMapper;
 
     @Override
