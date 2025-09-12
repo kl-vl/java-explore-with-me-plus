@@ -2,8 +2,8 @@ package ru.practicum.stats.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.stats.EndpointHitDto;
 import ru.practicum.stats.model.EndpointHitEntity;
 import ru.practicum.stats.ViewStatsDto;
@@ -16,19 +16,22 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Transactional(readOnly = true)
 public class StatsServiceImpl implements StatsService {
-    private final StatsServerRepository repository;
-    @Qualifier("endpointHitMapperImpl")
-    private final EndpointHitMapper mapper;
+    private final StatsServerRepository statsServerRepository;
+
+    //@Qualifier("endpointHitMapperImpl")
+    private final EndpointHitMapper endpointHitMapper;
 
     @Override
+    @Transactional
     public boolean addStat(EndpointHitDto endpointHitDto) {
         log.info("Stats-server. addStat input: uri = {}, app={} from ip {}",
                 endpointHitDto.getUri(),
                 endpointHitDto.getApp(),
                 endpointHitDto.getIp());
 
-        EndpointHitEntity savedEntity = repository.save(mapper.toEntity(endpointHitDto));
+        EndpointHitEntity savedEntity = statsServerRepository.save(endpointHitMapper.toEntity(endpointHitDto));
 
         log.info("Stats-server. addStat success: id = {}", savedEntity.getId());
 
@@ -39,7 +42,7 @@ public class StatsServiceImpl implements StatsService {
     public List<ViewStatsDto> getStat(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique) {
         log.info("Stats-server. getStat input: uris = {}, from {} to {}, unique = {}", uris.toString(), start, end, unique);
 
-        List<ViewStatsDto> list = repository.getViewStats(uris, start, end, unique);
+        List<ViewStatsDto> list = statsServerRepository.getViewStats(uris, start, end, unique);
 
         log.info("Stats-server. getStat success: found {}", list.size());
 
