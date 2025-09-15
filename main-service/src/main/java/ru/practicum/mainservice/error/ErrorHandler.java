@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
+import ru.practicum.mainservice.exception.CategoryNameUniqueException;
 import ru.practicum.mainservice.exception.CategoryNotFoundException;
 import ru.practicum.stats.ErrorResponseDto;
 
@@ -63,9 +64,21 @@ public class ErrorHandler {
         Map<String, String> details = new HashMap<>();
         details.put("exception", ex.getClass().getSimpleName());
         details.put("message", ex.getMessage());
-        details.put("stackTrace", getStackTraceAsString(ex));
 
         return new ErrorResponseDto("Category not found", "NOT_FOUND", details);
+    }
+
+    @ExceptionHandler(CategoryNameUniqueException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ErrorResponseDto errorHandlerCategoryNameUnique(final Exception ex, final WebRequest request) {
+
+        log.error("Category not found in {}: {}", request.getDescription(false), ex.getMessage(), ex);
+
+        Map<String, String> details = new HashMap<>();
+        details.put("exception", ex.getClass().getSimpleName());
+        details.put("message", ex.getMessage());
+
+        return new ErrorResponseDto("Category name must be unique", "CONFLICT", details);
     }
 
     @ExceptionHandler(ConstraintViolationException.class)

@@ -2,11 +2,13 @@ package ru.practicum.mainservice.category;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.mainservice.exception.CategoryNameUniqueException;
 import ru.practicum.mainservice.exception.CategoryNotFoundException;
 
 import java.util.List;
@@ -23,8 +25,12 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional
-    public CategoryDto createCategory(CategoryDto categoryDto) {
+    public CategoryDto createCategory(CategoryDto categoryDto) throws CategoryNameUniqueException {
         log.info("Main-server. createCategory input: name = {}", categoryDto.getName());
+
+        if (categoryDto.getName() != null && categoryRepository.existsByName(categoryDto.getName())) {
+            throw new CategoryNameUniqueException("Category with name '" + categoryDto.getName() + "' already exists");
+        }
 
         Category createdCategory = categoryRepository.save(categoryMapper.toEntity(categoryDto));
 
@@ -35,10 +41,23 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional
-    public CategoryDto updateCategory(CategoryDto categoryDto) {
+    public CategoryDto updateCategory(CategoryDto categoryDto) throws CategoryNotFoundException, CategoryNameUniqueException {
         log.info("Main-server. updateCategory input: id = {}, name = {}", categoryDto.getId(), categoryDto.getName());
 
-        Category updatedCategory = categoryRepository.save(categoryMapper.toEntity(categoryDto));
+
+        Category existingCategory = categoryRepository.findById(categoryDto.getId()).orElseThrow(() -> new CategoryNotFoundException("Category with id %s not found".formatted(categoryDto.getId())));
+
+        if (categoryDto.getName() != null &&
+                !categoryDto.getName().equals(existingCategory.getName()) &&
+                categoryRepository.existsByName(categoryDto.getName())) {
+            throw new CategoryNameUniqueException("Category with name '" + categoryDto.getName() + "' already exists");
+        }
+
+        if (categoryDto.getName() != null) {
+            existingCategory.setName(categoryDto.getName());
+        }
+
+        Category updatedCategory = categoryRepository.save(existingCategory);
 
         log.info("Main-server. updateCategory success: id = {}", updatedCategory.getId());
 

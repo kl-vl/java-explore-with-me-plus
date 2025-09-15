@@ -20,8 +20,8 @@ public class CategoryDto {
     private Long id;
 
     @NotNull(groups = CategoryDto.Create.class)
-    @NotBlank
-    @Size(min = 1, max = 50)
+    @NotBlank(groups = {Create.class, Update.class})
+    @Size(min = 1, max = 50, groups = {Create.class, Update.class})
     private String name;
 
 }
