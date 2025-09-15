@@ -44,7 +44,7 @@ public class StatsControllerTest {
             .id(1L)
             .app("Test")
             .uri("Test")
-            .ip("Test")
+            .ip("192.168.1.1")
             .timestamp(start)
             .build();
 
