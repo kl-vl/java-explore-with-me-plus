@@ -7,8 +7,9 @@ import org.springframework.data.repository.query.Param;
 import ru.practicum.mainservice.user.dto.UserDto;
 
 import java.util.List;
+import java.util.Optional;
 
-public interface UserRepository extends JpaRepository<UserDto, Integer> {
+public interface UserRepository extends JpaRepository<User, Integer> {
 
     @Query("SELECT new ru.practicum.mainservice.user.dto.UserDto(" +
             "u.id, " +
@@ -20,7 +21,19 @@ public interface UserRepository extends JpaRepository<UserDto, Integer> {
             "FETCH FIRST :size ROWS ONLY")
     List<UserDto> findAll(@Param("from") Integer from, @Param("size") Integer size);
 
-    @Query("DELETE FROM User u WHERE u.id = :id")
-    @Modifying
-    void deleteById(@Param("id") Long id);
+    @Query("SELECT new ru.practicum.mainservice.user.dto.UserDto(" +
+            "u.id," +
+            "u.email," +
+            "u.name) " +
+            "FROM User u WHERE u.id IN :ids")
+    List<UserDto> findManyById(List<Integer> ids);
+
+    void deleteById(Long id);
+
+    @Query("SELECT new ru.practicum.mainservice.user.dto.UserDto(" +
+            "u.id," +
+            "u.email," +
+            "u.name) " +
+            "FROM User u WHERE u.id = :id")
+    Optional<UserDto> findOne(Long id);
 }
