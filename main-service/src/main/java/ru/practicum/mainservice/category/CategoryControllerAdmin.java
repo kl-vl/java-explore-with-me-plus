@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import ru.practicum.mainservice.exception.CategoryNameUniqueException;
 import ru.practicum.mainservice.exception.CategoryNotFoundException;
+import ru.practicum.mainservice.exception.InvalidCategoryException;
 
 @RestController
 @RequestMapping(path = "/admin/categories")
@@ -25,13 +26,13 @@ public class CategoryControllerAdmin {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public CategoryDto createCategory(@Validated(CategoryDto.Create.class) @RequestBody CategoryDto categoryDto) throws CategoryNameUniqueException {
+    public CategoryDto createCategory(@Validated(CategoryDto.Create.class) @RequestBody CategoryDto categoryDto) throws CategoryNameUniqueException, InvalidCategoryException {
         return categoryService.createCategory(categoryDto);
     }
 
     @PatchMapping(path = "/{catId}")
     public CategoryDto updateCategory(@PathVariable @Positive Long catId,
-                                      @Validated(CategoryDto.Update.class) @RequestBody CategoryDto categoryDto) throws CategoryNotFoundException, CategoryNameUniqueException {
+                                      @Validated(CategoryDto.Update.class) @RequestBody CategoryDto categoryDto) throws CategoryNotFoundException, CategoryNameUniqueException, InvalidCategoryException {
         categoryDto.setId(catId);
         return categoryService.updateCategory(categoryDto);
     }

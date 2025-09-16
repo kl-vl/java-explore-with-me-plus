@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.mainservice.exception.CategoryNameUniqueException;
 import ru.practicum.mainservice.exception.CategoryNotFoundException;
+import ru.practicum.mainservice.exception.InvalidCategoryException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,7 +25,11 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional
-    public CategoryDto createCategory(CategoryDto categoryDto) throws CategoryNameUniqueException {
+    public CategoryDto createCategory(CategoryDto categoryDto) throws CategoryNameUniqueException, InvalidCategoryException {
+        if (categoryDto.getName() == null) {
+            throw new InvalidCategoryException("Category name must not be null");
+        }
+
         log.info("Main-server. createCategory input: name = {}", categoryDto.getName());
 
         if (categoryDto.getName() != null && categoryRepository.existsByName(categoryDto.getName())) {
@@ -40,7 +45,11 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional
-    public CategoryDto updateCategory(CategoryDto categoryDto) throws CategoryNotFoundException, CategoryNameUniqueException {
+    public CategoryDto updateCategory(CategoryDto categoryDto) throws CategoryNotFoundException, CategoryNameUniqueException, InvalidCategoryException {
+        if (categoryDto.getName() == null) {
+            throw new InvalidCategoryException("Category name must not be null");
+        }
+
         log.info("Main-server. updateCategory input: id = {}, name = {}", categoryDto.getId(), categoryDto.getName());
 
 
