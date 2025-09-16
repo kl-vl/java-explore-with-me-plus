@@ -49,19 +49,19 @@ class UserServiceTest {
             .name("User Two")
             .build();
 
-    private final UserDto userDto1 = UserDto.builder()
+    private final ru.practicum.mainservice.user.UserDto userDto1 = ru.practicum.mainservice.user.UserDto.builder()
             .id(1L)
             .email("user1@email.com")
             .name("User One")
             .build();
 
-    private final UserDto userDto2 = UserDto.builder()
+    private final ru.practicum.mainservice.user.UserDto userDto2 = ru.practicum.mainservice.user.UserDto.builder()
             .id(2L)
             .email("user2@email.com")
             .name("User Two")
             .build();
 
-    private final UserDto userSaveDto = new UserDto(null, "newuser@email.com", "New User");
+    private final ru.practicum.mainservice.user.UserDto userSaveDto = new ru.practicum.mainservice.user.UserDto(null, "newuser@email.com", "New User");
 
     @Test
     void findAllShouldReturnAllUsersWhenIdsIsNull() {
@@ -70,7 +70,7 @@ class UserServiceTest {
 
         when(userRepository.findAllByIds(null, pageable)).thenReturn(userPage);
 
-        List<UserDto> result = userService.findAllUsers(0, 10, null);
+        List<ru.practicum.mainservice.user.UserDto> result = userService.findAllUsers(0, 10, null);
 
         assertNotNull(result);
         assertEquals(2, result.size());
@@ -86,7 +86,7 @@ class UserServiceTest {
 
         when(userRepository.findAllByIds(null, pageable)).thenReturn(userPage);
 
-        List<UserDto> result = userService.findAllUsers(0, 20, List.of());
+        List<ru.practicum.mainservice.user.UserDto> result = userService.findAllUsers(0, 20, List.of());
 
         assertNotNull(result);
         assertEquals(2, result.size());
@@ -103,7 +103,7 @@ class UserServiceTest {
 
         when(userRepository.findAllByIds(ids, pageable)).thenReturn(userPage);
 
-        List<UserDto> result = userService.findAllUsers(0, 10, ids);
+        List<ru.practicum.mainservice.user.UserDto> result = userService.findAllUsers(0, 10, ids);
 
         assertNotNull(result);
         assertEquals(2, result.size());
@@ -119,7 +119,7 @@ class UserServiceTest {
 
         when(userRepository.findAllByIds(null, pageable)).thenReturn(emptyPage);
 
-        List<UserDto> result = userService.findAllUsers(0, 10, null);
+        List<ru.practicum.mainservice.user.UserDto> result = userService.findAllUsers(0, 10, null);
 
         assertNotNull(result);
         assertTrue(result.isEmpty());
@@ -135,7 +135,7 @@ class UserServiceTest {
                 .name("New User")
                 .build();
 
-        UserDto expectedDto = UserDto.builder()
+        ru.practicum.mainservice.user.UserDto expectedDto = ru.practicum.mainservice.user.UserDto.builder()
                 .id(1L)
                 .email("newuser@email.com")
                 .name("New User")
@@ -145,7 +145,7 @@ class UserServiceTest {
         when(userRepository.save(any(User.class))).thenReturn(savedUser);
         when(userMapper.toDto(savedUser)).thenReturn(expectedDto);
 
-        UserDto result = userService.createUser(userSaveDto);
+        ru.practicum.mainservice.user.UserDto result = userService.createUser(userSaveDto);
 
         assertNotNull(result);
         assertEquals(1L, result.getId());
@@ -170,7 +170,7 @@ class UserServiceTest {
                 .name(userSaveDto.getName())
                 .build();
 
-        UserDto savedUserDto = UserDto.builder()
+        ru.practicum.mainservice.user.UserDto savedUserDto = ru.practicum.mainservice.user.UserDto.builder()
                 .id(1L)
                 .email(userSaveDto.getEmail())
                 .name(userSaveDto.getName())
@@ -180,7 +180,7 @@ class UserServiceTest {
         when(userRepository.save(any(User.class))).thenReturn(savedUser);
         when(userMapper.toDto(savedUser)).thenReturn(savedUserDto);
 
-        UserDto result = userService.createUser(userSaveDto);
+        ru.practicum.mainservice.user.UserDto result = userService.createUser(userSaveDto);
 
         assertNotNull(result);
         assertEquals(userSaveDto.getEmail(), result.getEmail());
@@ -219,7 +219,7 @@ class UserServiceTest {
 
         when(userRepository.findAllByIds(null, expectedPageable)).thenReturn(userPage);
 
-        List<UserDto> result = userService.findAllUsers(2, 5, null);
+        List<ru.practicum.mainservice.user.UserDto> result = userService.findAllUsers(2, 5, null);
 
         assertNotNull(result);
         assertEquals(1, result.size());
@@ -235,7 +235,7 @@ class UserServiceTest {
 
         when(userRepository.findAllByIds(ids, pageable)).thenReturn(userPage);
 
-        List<UserDto> result = userService.findAllUsers(0, 10, ids);
+        List<ru.practicum.mainservice.user.UserDto> result = userService.findAllUsers(0, 10, ids);
 
         assertNotNull(result);
         assertEquals(1, result.size());
