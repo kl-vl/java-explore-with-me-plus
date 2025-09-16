@@ -8,8 +8,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import ru.practicum.mainservice.user.dto.UserDto;
-import ru.practicum.mainservice.user.dto.UserSave;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -29,7 +27,7 @@ public class UserControllerTest {
     private MockMvc mockMvc;
 
     @MockitoBean
-    private UserService userService;
+    private UserServiceImpl userService;
 
     @Test
     public void findAll() throws Exception {
@@ -54,7 +52,7 @@ public class UserControllerTest {
                 .name("Test User")
                 .build();
 
-        when(userService.create(any(UserSave.class))).thenReturn(userDto);
+        when(userService.createUser(any(UserDto.class))).thenReturn(userDto);
 
         mockMvc.perform(post("/admin/users")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -67,7 +65,7 @@ public class UserControllerTest {
 
     @Test
     public void delete() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.delete("/admin/users/{0}", "0"))
+        mockMvc.perform(MockMvcRequestBuilders.delete("/admin/users/{1}", "1"))
                 .andExpect(status().is(HttpStatus.NO_CONTENT.value()))
                 .andDo(print());
     }

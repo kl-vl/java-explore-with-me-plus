@@ -1,9 +1,17 @@
 package ru.practicum.mainservice.user;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 @Table(name = "users")
 @Entity
+@Getter
+@Builder
+@AllArgsConstructor
+@RequiredArgsConstructor
 public class User {
 
     @Id

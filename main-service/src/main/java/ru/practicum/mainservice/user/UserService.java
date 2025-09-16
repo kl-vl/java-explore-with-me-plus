@@ -1,37 +1,11 @@
 package ru.practicum.mainservice.user;
 
-import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import ru.practicum.mainservice.user.dto.UserDto;
-import ru.practicum.mainservice.user.dto.UserSave;
-
 import java.util.List;
 
-@RequiredArgsConstructor
-@Service
-@Transactional
-public class UserService {
+public interface UserService {
+    UserDto createUser(UserDto userDto);
 
-    private final UserRepository userRepository;
+    void deleteUserById(Long userId);
 
-    public List<UserDto> findAll(Integer from, Integer size, List<Integer> ids) {
-        if (ids == null || ids.isEmpty()) {
-            return userRepository.findAll(from, size);
-        } else {
-            return userRepository.findAllById(ids);
-        }
-    }
-
-    public UserDto create(UserSave userSave) {
-        UserDto userDtoSave = UserDto.builder()
-                .email(userSave.getEmail())
-                .name(userSave.getName())
-                .build();
-        return userRepository.save(userDtoSave);
-    }
-
-    public void delete(Long id) {
-        userRepository.deleteById(id);
-    }
+    List<UserDto> findAllUsers(Integer from, Integer size, List<Long> ids);
 }
