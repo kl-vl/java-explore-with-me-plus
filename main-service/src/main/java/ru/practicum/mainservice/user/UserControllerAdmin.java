@@ -2,6 +2,7 @@ package ru.practicum.mainservice.user;
 
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
+import jakarta.validation.groups.Default;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
@@ -14,6 +15,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import ru.practicum.mainservice.exception.UserAlreadyExistsException;
+import ru.practicum.mainservice.user.dto.UserDto;
+import ru.practicum.mainservice.validation.ValidationGroups;
 
 import java.util.List;
 
@@ -21,7 +25,7 @@ import java.util.List;
 @RequestMapping("/admin/users")
 @RequiredArgsConstructor
 @Validated
-public class UserController {
+public class UserControllerAdmin {
 
     private final UserService userService;
 
@@ -36,7 +40,7 @@ public class UserController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public UserDto save(@RequestBody @Validated(UserDto.Create.class)  UserDto userDto) {
+    public UserDto save(@RequestBody @Validated({ValidationGroups.Create.class, Default.class})  UserDto userDto) throws UserAlreadyExistsException {
         return userService.createUser(userDto);
     }
 

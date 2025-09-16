@@ -1,4 +1,4 @@
-package ru.practicum.mainservice.error;
+package ru.practicum.mainservice.handler;
 
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
@@ -9,8 +9,15 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
+import ru.practicum.mainservice.exception.CategoryIsRelatedToEventException;
 import ru.practicum.mainservice.exception.CategoryNameUniqueException;
 import ru.practicum.mainservice.exception.CategoryNotFoundException;
+import ru.practicum.mainservice.exception.EventAlreadyPublishedException;
+import ru.practicum.mainservice.exception.EventCanceledCantPublishException;
+import ru.practicum.mainservice.exception.EventDateException;
+import ru.practicum.mainservice.exception.EventNotFoundException;
+import ru.practicum.mainservice.exception.EventValidationException;
+import ru.practicum.mainservice.exception.UserAlreadyExistsException;
 import ru.practicum.stats.ErrorResponseDto;
 
 import java.io.PrintWriter;
@@ -55,20 +62,34 @@ public class ErrorHandler {
         return new ErrorResponseDto("Validation failed", "VALIDATION_ERROR", errors);
     }
 
-    @ExceptionHandler(CategoryNotFoundException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponseDto errorHandlerCategoryNotFound(final Exception ex, final WebRequest request) {
+    @ExceptionHandler(EventDateException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponseDto errorHandlerEventDate(final Exception ex, final WebRequest request) {
 
-        log.error("Category not found in {}: {}", request.getDescription(false), ex.getMessage(), ex);
+        log.error("Event date not valid {}: {}", request.getDescription(false), ex.getMessage(), ex);
 
         Map<String, String> details = new HashMap<>();
         details.put("exception", ex.getClass().getSimpleName());
         details.put("message", ex.getMessage());
 
-        return new ErrorResponseDto("Category not found", "NOT_FOUND", details);
+        return new ErrorResponseDto("Event date not valid", "BAD_REQUEST", details);
     }
 
-    @ExceptionHandler(CategoryNameUniqueException.class)
+    @ExceptionHandler({CategoryNotFoundException.class, EventNotFoundException.class})
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponseDto errorHandlerNotFound(final Exception ex, final WebRequest request) {
+
+        log.error("Entity not found in {}: {}", request.getDescription(false), ex.getMessage(), ex);
+
+        Map<String, String> details = new HashMap<>();
+        details.put("exception", ex.getClass().getSimpleName());
+        details.put("message", ex.getMessage());
+
+        return new ErrorResponseDto("Entity not found", "NOT_FOUND", details);
+    }
+
+    @ExceptionHandler({CategoryNameUniqueException.class, EventValidationException.class, UserAlreadyExistsException.class,
+            CategoryIsRelatedToEventException.class, EventAlreadyPublishedException.class, EventCanceledCantPublishException.class})
     @ResponseStatus(HttpStatus.CONFLICT)
     public ErrorResponseDto errorHandlerCategoryNameUnique(final Exception ex, final WebRequest request) {
 

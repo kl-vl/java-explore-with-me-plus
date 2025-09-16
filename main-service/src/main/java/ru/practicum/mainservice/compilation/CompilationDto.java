@@ -3,7 +3,7 @@ package ru.practicum.mainservice.compilation;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import ru.practicum.mainservice.event.EventDto;
+import ru.practicum.mainservice.event.dto.EventDto;
 
 import java.util.List;
 

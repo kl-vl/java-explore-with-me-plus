@@ -1,0 +1,43 @@
+package ru.practicum.mainservice.event.dto;
+
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.PositiveOrZero;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+@SuperBuilder
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+public class EventFilterBase {
+    /** public + admin
+     * список идентификаторов категорий в которых будет вестись поиск
+     */
+    private List<Long> categories;
+
+    // public + admin
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime rangeStart;
+
+    // public + admin
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime rangeEnd;
+
+    // public + admin
+    @PositiveOrZero
+    private int from = 0;
+
+    // public + admin
+    @Min(value = 1)
+    @Max(value = 1000)
+    private int size = 10;
+}

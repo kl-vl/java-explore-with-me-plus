@@ -4,24 +4,22 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Null;
 import jakarta.validation.constraints.Size;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import ru.practicum.mainservice.validation.ValidationGroups;
 
+@Builder
 @Getter
 @Setter
 public class CategoryDto {
-    public interface Create {
-    }
 
-    public interface Update {
-    }
-
-    @Null(groups = CategoryDto.Create.class)
+    @Null(groups = ValidationGroups.Create.class)
     private Long id;
 
-    @NotNull(groups = CategoryDto.Create.class)
-    @NotBlank(groups = {Create.class, Update.class})
-    @Size(min = 1, max = 50, groups = {Create.class, Update.class})
+    @NotNull(groups = ValidationGroups.Create.class)
+    @NotBlank
+    @Size(min = 1, max = 50)
     private String name;
 
 }

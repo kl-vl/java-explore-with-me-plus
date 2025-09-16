@@ -1,5 +1,6 @@
 package ru.practicum.mainservice.category;
 
+import ru.practicum.mainservice.exception.CategoryIsRelatedToEventException;
 import ru.practicum.mainservice.exception.CategoryNameUniqueException;
 import ru.practicum.mainservice.exception.CategoryNotFoundException;
 import ru.practicum.mainservice.exception.InvalidCategoryException;
@@ -11,7 +12,7 @@ public interface CategoryService {
 
     CategoryDto updateCategory(CategoryDto categoryDto) throws CategoryNotFoundException, CategoryNameUniqueException, InvalidCategoryException;
 
-    boolean deleteCategory(Long catId);
+    boolean deleteCategory(Long catId) throws CategoryIsRelatedToEventException;
 
     CategoryDto findCategoryById(Long catId) throws CategoryNotFoundException;
 
