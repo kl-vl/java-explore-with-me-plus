@@ -2,10 +2,15 @@ package ru.practicum.mainservice.user;
 
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.mainservice.user.dto.UserDto;
+import ru.practicum.mainservice.user.dto.UserSave;
 
 import java.util.List;
 
@@ -15,7 +20,7 @@ import java.util.List;
 @Validated
 public class UserController {
 
-    private final UserServiceImpl userService;
+    private final UserService userService;
 
     @GetMapping
     public List<UserDto> findAll(

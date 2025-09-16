@@ -8,10 +8,11 @@ import lombok.RequiredArgsConstructor;
 
 @Table(name = "users")
 @Entity
-@Getter
 @Builder
+@NoArgsConstructor
 @AllArgsConstructor
-@RequiredArgsConstructor
+@ToString
+@Getter
 public class User {
 
     @Id
@@ -22,6 +23,6 @@ public class User {
     @Column(name = "name")
     private String name;
 
-    @Column(name = "email")
+    @Column(name = "email", unique = true, nullable = false)
     private String email;
 }
