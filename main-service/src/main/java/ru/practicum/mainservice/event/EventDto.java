@@ -1,7 +1,7 @@
 package ru.practicum.mainservice.event;
 
 import ru.practicum.mainservice.category.CategoryDto;
-import ru.practicum.mainservice.user.UserDto;
+import ru.practicum.mainservice.user.dto.UserDto;
 
 import java.time.LocalDateTime;
 
