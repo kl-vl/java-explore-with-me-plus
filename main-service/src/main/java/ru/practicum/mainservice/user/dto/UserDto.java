@@ -1,10 +1,17 @@
-package ru.practicum.mainservice.user;
+package ru.practicum.mainservice.user.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
 
+@AllArgsConstructor
+@Builder
+@Getter
 public class UserDto {
+
     private Long id;
 
     @Email
