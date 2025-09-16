@@ -1,6 +1,5 @@
 package ru.practicum.mainservice.user;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -9,10 +8,15 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import ru.practicum.mainservice.user.dto.UserDto;
+import ru.practicum.mainservice.user.dto.UserSave;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
@@ -39,17 +43,26 @@ public class UserControllerTest {
 
     @Test
     public void save() throws Exception {
-        String userSave = """
-                {
-                    "email": "",
-                    "name": ""
-                }""";
+        String userSave = "{\n" +
+                "    \"email\": \"test@email.com\",\n" +
+                "    \"name\": \"Test User\"\n" +
+                "}";
+
+        UserDto userDto = UserDto.builder()
+                .id(1L)
+                .email("test@email.com")
+                .name("Test User")
+                .build();
+
+        when(userService.create(any(UserSave.class))).thenReturn(userDto);
 
         mockMvc.perform(post("/admin/users")
-                        .content(userSave)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andDo(print());
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(userSave))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").value(1L))
+                .andExpect(jsonPath("$.email").value("test@email.com"))
+                .andExpect(jsonPath("$.name").value("Test User"));
     }
 
     @Test
@@ -57,10 +70,5 @@ public class UserControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.delete("/admin/users/{0}", "0"))
                 .andExpect(status().is(HttpStatus.NO_CONTENT.value()))
                 .andDo(print());
-    }
-
-    @BeforeEach
-    public void setup() {
-
     }
 }
