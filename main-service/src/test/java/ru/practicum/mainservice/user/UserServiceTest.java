@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import ru.practicum.mainservice.exception.UserAlreadyExistsException;
 import ru.practicum.mainservice.user.dto.UserDto;
 
 import java.util.Collections;
@@ -129,7 +130,7 @@ class UserServiceTest {
     }
 
     @Test
-    void createShouldSaveAndReturnUser() {
+    void createShouldSaveAndReturnUser() throws UserAlreadyExistsException {
         User savedUser = User.builder()
                 .id(1L)
                 .email("newuser@email.com")
@@ -159,7 +160,7 @@ class UserServiceTest {
     }
 
     @Test
-    void createShouldMapUserSaveToUserDtoCorrectly() {
+    void createShouldMapUserSaveToUserDtoCorrectly() throws UserAlreadyExistsException {
         User userToSave = User.builder()
                 .email(userSaveDto.getEmail())
                 .name(userSaveDto.getName())
