@@ -19,10 +19,7 @@ import ru.practicum.mainservice.exception.RequestNotFoundException;
 import ru.practicum.mainservice.exception.UserNotFoundException;
 import ru.practicum.mainservice.request.dto.RequestDto;
 
-import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/users/{userId}/requests")

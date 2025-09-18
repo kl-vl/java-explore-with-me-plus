@@ -1,8 +1,10 @@
 package ru.practicum.mainservice.request;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -12,7 +14,7 @@ public interface RequestRepository extends JpaRepository<Request, Long> {
     // getRequestsByOwnerOfEvent
     List<Request> findByEventIdAndEvent_InitiatorId(Long eventId, Long initiatorId);
 
-    // createRequest - проверка существования запроса
+    // createRequest
     Boolean existsByRequesterIdAndEventId(Long requesterId, Long eventId);
 
     //  getCurrentUserRequests
@@ -21,7 +23,7 @@ public interface RequestRepository extends JpaRepository<Request, Long> {
     // cancelRequests
     Optional<Request> findByIdAndRequesterId(Long id, Long requesterId);
 
-    // updateRequests - поиск запросов по ID для события
+    // updateRequests
     @Query("SELECT r FROM Request r WHERE r.id IN :requestIds AND r.event.id = :eventId")
     List<Request> findByIdInAndEventId(@Param("requestIds") List<Long> requestIds,
                                        @Param("eventId") Long eventId);
@@ -29,4 +31,17 @@ public interface RequestRepository extends JpaRepository<Request, Long> {
     // лимит участников
     @Query("SELECT COUNT(r) FROM Request r WHERE r.event.id = :eventId AND r.status = 'CONFIRMED'")
     Long countConfirmedRequests(@Param("eventId") Long eventId);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE Request r SET r.status = :status " +
+            "WHERE r.id IN :requestIds AND r.event.id = :eventId")
+    int updateRequestsStatus(@Param("requestIds") List<Long> requestIds,
+                             @Param("eventId") Long eventId,
+                             @Param("status") RequestStatus status);
+
+    @Query("SELECT r FROM Request r WHERE r.id IN :requestIds AND r.event.id = :eventId AND r.status = :status")
+    List<Request> findRequestsByStatus(@Param("requestIds") List<Long> requestIds,
+                                       @Param("eventId") Long eventId,
+                                       @Param("status") RequestStatus status);
 }

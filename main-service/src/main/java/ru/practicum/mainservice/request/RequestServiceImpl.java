@@ -84,9 +84,28 @@ public class RequestServiceImpl implements RequestService {
 //        if (event.getState() != EventState.PUBLISHED) {
 //            throw new EventNotPublishedException("Event is not published");
 //        }
+        requestRepository.updateRequestsStatus(
+                requestStatusUpdateDto.getRequestIds(),
+                eventId,
+                requestStatusUpdateDto.getStatus()
+        );
 
+        List<Request> confirmedRequests = requestRepository.findRequestsByStatus(
+                requestStatusUpdateDto.getRequestIds(),
+                eventId,
+                RequestStatus.CONFIRMED
+        );
 
-        return null;
+        List<Request> rejectedRequests = requestRepository.findRequestsByStatus(
+                requestStatusUpdateDto.getRequestIds(),
+                eventId,
+                RequestStatus.REJECTED
+        );
+
+        return RequestStatusUpdateResultDto.builder()
+                .confirmedRequests(requestMapper.toParticipationDtoList(confirmedRequests))
+                .rejectedRequests(requestMapper.toParticipationDtoList(rejectedRequests))
+                .build();
     }
 
     @Override

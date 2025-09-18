@@ -27,10 +27,8 @@ import ru.practicum.mainservice.request.RequestService;
 import ru.practicum.mainservice.request.dto.RequestDto;
 import ru.practicum.mainservice.request.dto.RequestStatusUpdateDto;
 import ru.practicum.mainservice.request.dto.RequestStatusUpdateResultDto;
-import ru.practicum.mainservice.user.UserService;
 import ru.practicum.mainservice.validation.ValidationGroups;
 
-import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -44,7 +42,7 @@ public class EventControllerPrivate {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public EventDtoFull createEvent(@PathVariable @Positive Long userId, @RequestBody @Validated(ValidationGroups.Create.class) EventDto eventDto) throws UserNotFoundException, CategoryNotFoundException, EventDateException, EventValidationException {
+    public EventDtoFull createEvent(@PathVariable @Positive Long userId, @RequestBody @Validated({ValidationGroups.Create.class, Default.class}) EventDto eventDto) throws UserNotFoundException, CategoryNotFoundException, EventDateException, EventValidationException {
         eventDto.setInitiator(userId);
         return eventService.createEvent(eventDto);
     }
