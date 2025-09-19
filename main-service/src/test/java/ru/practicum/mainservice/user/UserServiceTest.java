@@ -9,6 +9,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import ru.practicum.mainservice.exception.UserAlreadyExistsException;
+import ru.practicum.mainservice.user.dto.UserDto;
 
 import java.util.Collections;
 import java.util.List;
@@ -49,19 +51,19 @@ class UserServiceTest {
             .name("User Two")
             .build();
 
-    private final ru.practicum.mainservice.user.UserDto userDto1 = ru.practicum.mainservice.user.UserDto.builder()
+    private final UserDto userDto1 = UserDto.builder()
             .id(1L)
             .email("user1@email.com")
             .name("User One")
             .build();
 
-    private final ru.practicum.mainservice.user.UserDto userDto2 = ru.practicum.mainservice.user.UserDto.builder()
+    private final UserDto userDto2 = UserDto.builder()
             .id(2L)
             .email("user2@email.com")
             .name("User Two")
             .build();
 
-    private final ru.practicum.mainservice.user.UserDto userSaveDto = new ru.practicum.mainservice.user.UserDto(null, "newuser@email.com", "New User");
+    private final UserDto userSaveDto = new UserDto(null, "newuser@email.com", "New User");
 
     @Test
     void findAllShouldReturnAllUsersWhenIdsIsNull() {
@@ -70,7 +72,7 @@ class UserServiceTest {
 
         when(userRepository.findAllByIds(null, pageable)).thenReturn(userPage);
 
-        List<ru.practicum.mainservice.user.UserDto> result = userService.findAllUsers(0, 10, null);
+        List<UserDto> result = userService.findAllUsers(0, 10, null);
 
         assertNotNull(result);
         assertEquals(2, result.size());
@@ -86,7 +88,7 @@ class UserServiceTest {
 
         when(userRepository.findAllByIds(null, pageable)).thenReturn(userPage);
 
-        List<ru.practicum.mainservice.user.UserDto> result = userService.findAllUsers(0, 20, List.of());
+        List<UserDto> result = userService.findAllUsers(0, 20, List.of());
 
         assertNotNull(result);
         assertEquals(2, result.size());
@@ -103,7 +105,7 @@ class UserServiceTest {
 
         when(userRepository.findAllByIds(ids, pageable)).thenReturn(userPage);
 
-        List<ru.practicum.mainservice.user.UserDto> result = userService.findAllUsers(0, 10, ids);
+        List<UserDto> result = userService.findAllUsers(0, 10, ids);
 
         assertNotNull(result);
         assertEquals(2, result.size());
@@ -119,7 +121,7 @@ class UserServiceTest {
 
         when(userRepository.findAllByIds(null, pageable)).thenReturn(emptyPage);
 
-        List<ru.practicum.mainservice.user.UserDto> result = userService.findAllUsers(0, 10, null);
+        List<UserDto> result = userService.findAllUsers(0, 10, null);
 
         assertNotNull(result);
         assertTrue(result.isEmpty());
@@ -128,14 +130,14 @@ class UserServiceTest {
     }
 
     @Test
-    void createShouldSaveAndReturnUser() {
+    void createShouldSaveAndReturnUser() throws UserAlreadyExistsException {
         User savedUser = User.builder()
                 .id(1L)
                 .email("newuser@email.com")
                 .name("New User")
                 .build();
 
-        ru.practicum.mainservice.user.UserDto expectedDto = ru.practicum.mainservice.user.UserDto.builder()
+        UserDto expectedDto = UserDto.builder()
                 .id(1L)
                 .email("newuser@email.com")
                 .name("New User")
@@ -143,9 +145,9 @@ class UserServiceTest {
 
         when(userMapper.toEntity(userSaveDto)).thenReturn(savedUser);
         when(userRepository.save(any(User.class))).thenReturn(savedUser);
-        when(userMapper.toDto(savedUser)).thenReturn(expectedDto);
+        when(userMapper.toUserDto(savedUser)).thenReturn(expectedDto);
 
-        ru.practicum.mainservice.user.UserDto result = userService.createUser(userSaveDto);
+        UserDto result = userService.createUser(userSaveDto);
 
         assertNotNull(result);
         assertEquals(1L, result.getId());
@@ -154,11 +156,11 @@ class UserServiceTest {
 
         verify(userRepository, times(1)).save(any(User.class));
         verify(userMapper, times(1)).toEntity(userSaveDto);
-        verify(userMapper, times(1)).toDto(savedUser);
+        verify(userMapper, times(1)).toUserDto(savedUser);
     }
 
     @Test
-    void createShouldMapUserSaveToUserDtoCorrectly() {
+    void createShouldMapUserSaveToUserDtoCorrectly() throws UserAlreadyExistsException {
         User userToSave = User.builder()
                 .email(userSaveDto.getEmail())
                 .name(userSaveDto.getName())
@@ -170,7 +172,7 @@ class UserServiceTest {
                 .name(userSaveDto.getName())
                 .build();
 
-        ru.practicum.mainservice.user.UserDto savedUserDto = ru.practicum.mainservice.user.UserDto.builder()
+        UserDto savedUserDto = UserDto.builder()
                 .id(1L)
                 .email(userSaveDto.getEmail())
                 .name(userSaveDto.getName())
@@ -178,9 +180,9 @@ class UserServiceTest {
 
         when(userMapper.toEntity(userSaveDto)).thenReturn(userToSave);
         when(userRepository.save(any(User.class))).thenReturn(savedUser);
-        when(userMapper.toDto(savedUser)).thenReturn(savedUserDto);
+        when(userMapper.toUserDto(savedUser)).thenReturn(savedUserDto);
 
-        ru.practicum.mainservice.user.UserDto result = userService.createUser(userSaveDto);
+        UserDto result = userService.createUser(userSaveDto);
 
         assertNotNull(result);
         assertEquals(userSaveDto.getEmail(), result.getEmail());
@@ -188,7 +190,7 @@ class UserServiceTest {
 
         verify(userMapper, times(1)).toEntity(userSaveDto);
         verify(userRepository, times(1)).save(any(User.class));
-        verify(userMapper, times(1)).toDto(savedUser);
+        verify(userMapper, times(1)).toUserDto(savedUser);
     }
 
     @Test
@@ -219,7 +221,7 @@ class UserServiceTest {
 
         when(userRepository.findAllByIds(null, expectedPageable)).thenReturn(userPage);
 
-        List<ru.practicum.mainservice.user.UserDto> result = userService.findAllUsers(2, 5, null);
+        List<UserDto> result = userService.findAllUsers(2, 5, null);
 
         assertNotNull(result);
         assertEquals(1, result.size());
@@ -235,7 +237,7 @@ class UserServiceTest {
 
         when(userRepository.findAllByIds(ids, pageable)).thenReturn(userPage);
 
-        List<ru.practicum.mainservice.user.UserDto> result = userService.findAllUsers(0, 10, ids);
+        List<UserDto> result = userService.findAllUsers(0, 10, ids);
 
         assertNotNull(result);
         assertEquals(1, result.size());

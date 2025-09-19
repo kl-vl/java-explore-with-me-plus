@@ -1,6 +1,7 @@
 package ru.practicum.stats;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -11,6 +12,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+@Component
 public class ClientRestStatImpl implements ClientRestStat {
 
     private final RestClient restClient;

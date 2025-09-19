@@ -7,6 +7,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.mainservice.event.EventRepository;
+import ru.practicum.mainservice.exception.CategoryIsRelatedToEventException;
 import ru.practicum.mainservice.exception.CategoryNameUniqueException;
 import ru.practicum.mainservice.exception.CategoryNotFoundException;
 import ru.practicum.mainservice.exception.InvalidCategoryException;
@@ -22,6 +24,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
     private final CategoryMapper categoryMapper;
+    private final EventRepository eventRepository;
 
     @Override
     @Transactional
@@ -74,8 +77,12 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional
-    public boolean deleteCategory(Long catId) {
+    public boolean deleteCategory(Long catId) throws CategoryIsRelatedToEventException {
         log.info("Main-server. deleteCategory input: id = {}", catId);
+
+        if (eventRepository.existsByCategoryId(catId)) {
+            throw new CategoryIsRelatedToEventException("Category is related to event");
+        }
 
         categoryRepository.deleteById(catId);
 
@@ -88,7 +95,6 @@ public class CategoryServiceImpl implements CategoryService {
     public List<CategoryDto> findAllCategories(Integer from, Integer size) {
         log.info("Main-server. findAllCategories input: from = {}, size = {}", from, size);
 
-        //List<Category> allCategories = categoryRepository.findAll().subList(from, from + size);
         Pageable pageable = PageRequest.of(from / size, size);
         Page<Category> categoryPage = categoryRepository.findAll(pageable);
 

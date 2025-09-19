@@ -9,6 +9,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.mainservice.exception.UserAlreadyExistsException;
+import ru.practicum.mainservice.user.dto.UserDto;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -38,19 +40,27 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public UserDto createUser(UserDto userDto) {
+    public UserDto createUser(UserDto userDto) throws UserAlreadyExistsException {
         log.info("Main-server. createUser input: email = {}", userDto.getEmail());
+
+        if (userRepository.existsByEmail(userDto.getEmail())) {
+            throw new UserAlreadyExistsException("User with email " + userDto.getEmail() + " already exists");
+        }
 
         User createdUser = userRepository.save(userMapper.toEntity(userDto));
 
         log.info("Main-server. createUser success: id = {}", createdUser.getId());
 
-        return userMapper.toDto(createdUser);
+        return userMapper.toUserDto(createdUser);
     }
 
     @Override
     @Transactional
     public void deleteUserById(Long userId) {
+        log.info("Main-server. deleteUserById input: userId = {}", userId);
+
         userRepository.deleteById(userId);
+
+        log.info("Main-server. deleteUserById success");
     }
 }
