@@ -16,7 +16,6 @@ import ru.practicum.mainservice.event.EventRepository;
 import ru.practicum.mainservice.exception.CompilationNotFoundException;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -41,7 +40,7 @@ public class CompilationServiceImpl implements CompilationService {
         if (!compilationDto.getEvents().isEmpty()) {
             compilation.setEvents(getEventsByIds(compilationDto.getEvents()));
         }
-        Compilation savedCompilation = resetNullEvents(compilationRepository.save(compilation));
+        Compilation savedCompilation = compilationRepository.save(compilation);
 
         log.info("Main-server. Create compilation success: id = {}", savedCompilation.getId());
         return compilationMapper.toDto(savedCompilation);
@@ -55,9 +54,6 @@ public class CompilationServiceImpl implements CompilationService {
             throw new CompilationNotFoundException(String.format("Не найдена подборка с id=%d", compilationId));
         }
         Compilation compilation = optionalCompilation.get();
-        if (compilation.getEvents() == null) {
-            compilation.setEvents(new HashSet<>());
-        }
         log.info("Main-server. Get compilation by id success {}", compilation);
         return compilationMapper.toDto(compilation);
     }
@@ -89,16 +85,7 @@ public class CompilationServiceImpl implements CompilationService {
             page = compilationRepository.findAll(pageable);
         }
         log.info("Main-server. findAll success: found {} compilations", page.getNumberOfElements());
-        List<Compilation> list = page.getContent().stream().map(this::resetNullEvents).toList();
-        return compilationMapper.toDtoList(list);
-    }
-
-    private Compilation resetNullEvents(Compilation compilation) {
-        if (compilation.getEvents() == null) {
-            compilation.setEvents(new HashSet<>());
-            return compilation;
-        }
-        return compilation;
+        return compilationMapper.toDtoList(page.getContent());
     }
 
     @Override
@@ -119,7 +106,7 @@ public class CompilationServiceImpl implements CompilationService {
         if (compilationCreateDto.getTitle() != null) {
             compilation.setTitle(compilationCreateDto.getTitle());
         }
-        Compilation savedCompilation = resetNullEvents(compilationRepository.save(compilation));
+        Compilation savedCompilation = compilationRepository.save(compilation);
         log.info("Main-server. Update compilations id={} success: {}", compilationId, compilation);
         return compilationMapper.toDto(savedCompilation);
     }
