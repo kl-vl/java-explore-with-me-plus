@@ -1,20 +1,25 @@
 package ru.practicum.mainservice.compilation;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.NamedAttributeNode;
+import jakarta.persistence.NamedEntityGraph;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import ru.practicum.mainservice.event.Event;
 
 import java.util.Set;
@@ -26,6 +31,7 @@ import java.util.Set;
 @Entity
 @Getter
 @Setter
+@NamedEntityGraph(name = "compilation-with-events", attributeNodes = @NamedAttributeNode("events"))
 public class Compilation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,11 +42,23 @@ public class Compilation {
     @Column(name = "title")
     private String title;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @Fetch(FetchMode.JOIN)
+    @BatchSize(size = 10)
     @JoinTable(
             name = "compilation_event",
             joinColumns = {@JoinColumn(name = "compilation_id")},
             inverseJoinColumns = {@JoinColumn(name = "event_id")}
     )
     private Set<Event> events;
+
+    public void addEvent(Event event) {
+        this.events.add(event);
+        event.getCompilations().add(this);
+    }
+
+    public void removeEvent(Event event) {
+        this.events.remove(event);
+        event.getCompilations().remove(this);
+    }
 }

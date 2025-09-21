@@ -40,7 +40,7 @@ public class UserControllerAdmin {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public UserDto save(@RequestBody @Validated({ValidationGroups.Create.class, Default.class})  UserDto userDto) throws UserAlreadyExistsException {
+    public UserDto save(@RequestBody @Validated({ValidationGroups.Create.class, Default.class}) UserDto userDto) throws UserAlreadyExistsException {
         return userService.createUser(userDto);
     }
 

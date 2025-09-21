@@ -8,9 +8,9 @@ import ru.practicum.mainservice.event.dto.EventFilterPublic;
 import ru.practicum.mainservice.exception.CategoryNotFoundException;
 import ru.practicum.mainservice.exception.EventAlreadyPublishedException;
 import ru.practicum.mainservice.exception.EventCanceledCantPublishException;
+import ru.practicum.mainservice.exception.EventDateException;
 import ru.practicum.mainservice.exception.EventNotFoundException;
 import ru.practicum.mainservice.exception.EventValidationException;
-import ru.practicum.mainservice.exception.EventDateException;
 import ru.practicum.mainservice.exception.PaginatorValidationException;
 import ru.practicum.mainservice.exception.UserNotFoundException;
 

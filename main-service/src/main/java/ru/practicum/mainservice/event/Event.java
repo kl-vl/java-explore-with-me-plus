@@ -9,6 +9,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -17,11 +18,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import ru.practicum.mainservice.category.Category;
+import ru.practicum.mainservice.compilation.Compilation;
 import ru.practicum.mainservice.event.enums.EventState;
 import ru.practicum.mainservice.location.Location;
 import ru.practicum.mainservice.user.User;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Entity
 @Table(name = "event")
@@ -75,4 +78,7 @@ public class Event {
 
     // TODO Не хранится в бд, получается через клиента
     private Long views;
+
+    @ManyToMany(mappedBy = "events")
+    private Set<Compilation> compilations;
 }
