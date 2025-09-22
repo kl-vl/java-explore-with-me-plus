@@ -7,6 +7,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.practicum.stats.EndpointHitDto;
 import ru.practicum.stats.ViewStatsDto;
+import ru.practicum.stats.exception.StartDateIsAfterEndDateException;
 import ru.practicum.stats.mapper.EndpointHitMapper;
 import ru.practicum.stats.model.EndpointHitEntity;
 import ru.practicum.stats.repository.StatsServerRepository;
@@ -83,7 +84,7 @@ class StatsServiceImplTest {
     }
 
     @Test
-    void getStatShouldReturnViewStatsFromRepository() {
+    void getStatShouldReturnViewStatsFromRepository() throws StartDateIsAfterEndDateException {
         LocalDateTime start = LocalDateTime.of(2024, 1, 1, 0, 0);
         LocalDateTime end = LocalDateTime.of(2024, 1, 2, 0, 0);
         List<String> uris = List.of("/test1", "/test2");
@@ -104,7 +105,7 @@ class StatsServiceImplTest {
     }
 
     @Test
-    void getStatShouldHandleEmptyUrisList() {
+    void getStatShouldHandleEmptyUrisList() throws StartDateIsAfterEndDateException {
         LocalDateTime start = LocalDateTime.of(2024, 1, 1, 0, 0);
         LocalDateTime end = LocalDateTime.of(2024, 1, 2, 0, 0);
         List<String> uris = List.of();
@@ -123,7 +124,7 @@ class StatsServiceImplTest {
     }
 
     @Test
-    void getStatShouldHandleEmptyResult() {
+    void getStatShouldHandleEmptyResult() throws StartDateIsAfterEndDateException {
         LocalDateTime start = LocalDateTime.of(2024, 1, 1, 0, 0);
         LocalDateTime end = LocalDateTime.of(2024, 1, 2, 0, 0);
         List<String> uris = List.of("/nonexistent");
@@ -139,7 +140,7 @@ class StatsServiceImplTest {
     }
 
     @Test
-    void getStatShouldHandleUniqueFalse() {
+    void getStatShouldHandleUniqueFalse() throws StartDateIsAfterEndDateException {
         LocalDateTime start = LocalDateTime.of(2024, 1, 1, 0, 0);
         LocalDateTime end = LocalDateTime.of(2024, 1, 2, 0, 0);
         List<String> uris = List.of("/test");
