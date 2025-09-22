@@ -70,7 +70,7 @@ public class EventControllerPrivate {
     }
 
     /**
-     *  Получение информации о запросах на участие в событии текущего пользователя
+     * Получение информации о запросах на участие в событии текущего пользователя
      */
     @GetMapping("/{eventId}/requests")
     public List<RequestDto> getRequestsByOwnerOfEvent(@PathVariable @Positive Long userId, @PathVariable @Positive Long eventId) throws EventNotFoundException {

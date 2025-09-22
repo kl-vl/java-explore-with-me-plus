@@ -4,6 +4,7 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -19,7 +20,8 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class EventFilterBase {
-    /** public + admin
+    /**
+     * public + admin
      * список идентификаторов категорий в которых будет вестись поиск
      */
     private List<Long> categories;
@@ -39,5 +41,6 @@ public class EventFilterBase {
     // public + admin
     @Min(value = 1)
     @Max(value = 1000)
+    @Builder.Default
     private int size = 10;
 }

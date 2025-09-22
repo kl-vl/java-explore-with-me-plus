@@ -12,6 +12,7 @@ import org.springframework.web.context.request.WebRequest;
 import ru.practicum.mainservice.exception.CategoryIsRelatedToEventException;
 import ru.practicum.mainservice.exception.CategoryNameUniqueException;
 import ru.practicum.mainservice.exception.CategoryNotFoundException;
+import ru.practicum.mainservice.exception.CompilationNotFoundException;
 import ru.practicum.mainservice.exception.EventAlreadyPublishedException;
 import ru.practicum.mainservice.exception.EventCanceledCantPublishException;
 import ru.practicum.mainservice.exception.EventDateException;
@@ -75,7 +76,7 @@ public class ErrorHandler {
         return new ErrorResponseDto("Event date not valid", "BAD_REQUEST", details);
     }
 
-    @ExceptionHandler({CategoryNotFoundException.class, EventNotFoundException.class})
+    @ExceptionHandler({CategoryNotFoundException.class, EventNotFoundException.class, CompilationNotFoundException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponseDto errorHandlerNotFound(final Exception ex, final WebRequest request) {
 
