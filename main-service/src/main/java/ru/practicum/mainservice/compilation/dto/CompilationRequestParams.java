@@ -1,4 +1,4 @@
-package ru.practicum.mainservice.compilation.controller;
+package ru.practicum.mainservice.compilation.dto;
 
 import lombok.Builder;
 import lombok.Getter;

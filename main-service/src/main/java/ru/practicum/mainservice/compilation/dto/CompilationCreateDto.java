@@ -20,8 +20,8 @@ public class CompilationCreateDto {
     private Boolean pinned;
 
     @NotNull(groups = ValidationGroups.Create.class)
-    @NotBlank
-    @Size(min = 1, max = 50)
+    @NotBlank(groups = {ValidationGroups.Create.class, ValidationGroups.Update.class})
+    @Size(min = 1, max = 50, groups = {ValidationGroups.Create.class, ValidationGroups.Update.class})
     private String title;
 
 }

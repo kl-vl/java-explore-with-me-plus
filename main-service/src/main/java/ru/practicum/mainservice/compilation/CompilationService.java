@@ -1,8 +1,8 @@
 package ru.practicum.mainservice.compilation;
 
-import ru.practicum.mainservice.compilation.controller.CompilationRequestParams;
 import ru.practicum.mainservice.compilation.dto.CompilationCreateDto;
 import ru.practicum.mainservice.compilation.dto.CompilationDto;
+import ru.practicum.mainservice.compilation.dto.CompilationRequestParams;
 import ru.practicum.mainservice.exception.CompilationNotFoundException;
 
 import java.util.Collection;

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.practicum.mainservice.compilation.CompilationService;
 import ru.practicum.mainservice.compilation.dto.CompilationDto;
+import ru.practicum.mainservice.compilation.dto.CompilationRequestParams;
 import ru.practicum.mainservice.exception.CompilationNotFoundException;
 
 import java.util.Collection;
