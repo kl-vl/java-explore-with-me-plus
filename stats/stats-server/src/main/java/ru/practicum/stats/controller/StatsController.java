@@ -32,7 +32,7 @@ public class StatsController {
     public List<ViewStatsDto> getStats(@RequestParam @DateTimeFormat(pattern = DATE_TIME_PATTERN) LocalDateTime start,
                                        @RequestParam @DateTimeFormat(pattern = DATE_TIME_PATTERN) LocalDateTime end,
                                        @RequestParam(required = false, defaultValue = "") List<String> uris,
-                                       @RequestParam(required = false, defaultValue = "false") Boolean unique) {
+                                       @RequestParam(required = false, defaultValue = "true") Boolean unique) {
         if (uris == null) {
             uris = Collections.emptyList();
         }
