@@ -16,6 +16,7 @@ import ru.practicum.stats.ViewStatsDto;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -81,7 +82,7 @@ class ClientRestStatImplIntegrationTest {
 
         LocalDateTime start = LocalDateTime.of(2023, 1, 1, 12, 30, 45);
         LocalDateTime end = LocalDateTime.of(2023, 1, 2, 15, 45, 30);
-        String[] uris = {"/events/1", "/events/2"};
+        List<String> uris = List.of("/events/1", "/events/2");
 
         List<ViewStatsDto> result = client.getStat(start, end, uris, true);
 
@@ -125,7 +126,7 @@ class ClientRestStatImplIntegrationTest {
         LocalDateTime start = LocalDateTime.of(2023, 1, 1, 0, 0);
         LocalDateTime end = LocalDateTime.of(2023, 1, 2, 0, 0);
 
-        List<ViewStatsDto> result = client.getStat(start, end, null, false);
+        List<ViewStatsDto> result = client.getStat(start, end, Collections.emptyList(), false);
 
         assertNotNull(result);
         assertTrue(result.isEmpty());
@@ -152,7 +153,7 @@ class ClientRestStatImplIntegrationTest {
 
         LocalDateTime start = LocalDateTime.of(2023, 1, 1, 0, 0);
         LocalDateTime end = LocalDateTime.of(2023, 1, 2, 0, 0);
-        String[] uris = {};
+        List<String> uris = List.of();
 
         List<ViewStatsDto> result = client.getStat(start, end, uris, true);
 
@@ -180,7 +181,7 @@ class ClientRestStatImplIntegrationTest {
 
         LocalDateTime start = LocalDateTime.of(2023, 1, 1, 0, 0);
         LocalDateTime end = LocalDateTime.of(2023, 1, 2, 0, 0);
-        String[] uris = {"/events/1"};
+        List<String> uris = List.of("/events/1");
 
         assertThrows(org.springframework.web.client.HttpServerErrorException.class, () -> client.getStat(start, end, uris, true));
 
@@ -197,7 +198,7 @@ class ClientRestStatImplIntegrationTest {
 
         LocalDateTime start = LocalDateTime.of(2023, 1, 1, 0, 0);
         LocalDateTime end = LocalDateTime.of(2023, 1, 2, 0, 0);
-        String[] uris = {"/events/1"};
+        List<String> uris = List.of("/events/1");
 
         List<ViewStatsDto> result = client.getStat(start, end, uris, true);
 

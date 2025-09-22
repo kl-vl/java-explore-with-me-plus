@@ -31,10 +31,6 @@ public interface EventService {
 
     EventDtoFull updateEventByUserId(EventDto eventDto) throws EventNotFoundException, EventDateException, EventCanceledCantPublishException;
 
-    //List<RequestDto> getUserRequests(Long userId, Long eventId);
-
-    //EventRequestDto changingStatusRequest(Long userId, Long eventId, EventRequestStatusUpdateRequest updateRequest);
-
     //Public
     List<EventDtoFull> findEvents(EventFilterPublic eventFilter, HttpServletRequest request) throws PaginatorValidationException, EventDateException;
 

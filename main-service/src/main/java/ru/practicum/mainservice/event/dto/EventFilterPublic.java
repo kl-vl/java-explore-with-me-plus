@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import ru.practicum.mainservice.event.enums.EventSort;
 
@@ -12,6 +13,7 @@ import ru.practicum.mainservice.event.enums.EventSort;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString(callSuper = true)
 public class EventFilterPublic extends EventFilterBase {
 
     /** Public

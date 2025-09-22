@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.mainservice.request.dto.ConfirmedRequestsCount;
 
 import java.util.List;
 import java.util.Optional;
@@ -46,4 +47,13 @@ public interface RequestRepository extends JpaRepository<Request, Long> {
     List<Request> findRequestsByStatus(@Param("requestIds") List<Long> requestIds,
                                        @Param("eventId") Long eventId,
                                        @Param("status") RequestStatus status);
+
+    @Query("SELECT r.event.id as eventId, COUNT(r) as count " +
+            "FROM Request r " +
+            "WHERE r.event.id IN :eventIds " +
+            "AND r.status = 'CONFIRMED' " +
+            "GROUP BY r.event.id")
+    List<ConfirmedRequestsCount> findConfirmedRequestsCountByEventIds(@Param("eventIds") List<Long> eventIds);
+
+    Long countByEventIdAndStatus(Long eventId, RequestStatus status);
 }

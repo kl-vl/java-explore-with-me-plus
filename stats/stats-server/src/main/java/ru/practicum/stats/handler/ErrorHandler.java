@@ -1,4 +1,4 @@
-package ru.practicum.stats.error;
+package ru.practicum.stats.handler;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

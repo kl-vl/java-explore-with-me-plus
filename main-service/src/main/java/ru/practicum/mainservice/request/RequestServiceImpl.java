@@ -6,11 +6,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.mainservice.event.Event;
 import ru.practicum.mainservice.event.EventRepository;
+import ru.practicum.mainservice.event.enums.EventState;
 import ru.practicum.mainservice.exception.EventNotFoundException;
+import ru.practicum.mainservice.exception.EventNotPublishedException;
 import ru.practicum.mainservice.exception.ParticipantLimitExceededException;
 import ru.practicum.mainservice.exception.RequestAlreadyExistsException;
 import ru.practicum.mainservice.exception.RequestNotFoundException;
+import ru.practicum.mainservice.exception.RequestSelfAttendException;
 import ru.practicum.mainservice.exception.UserNotFoundException;
+import ru.practicum.mainservice.request.dto.ParticipationRequestDto;
 import ru.practicum.mainservice.request.dto.RequestDto;
 import ru.practicum.mainservice.request.dto.RequestStatusUpdateDto;
 import ru.practicum.mainservice.request.dto.RequestStatusUpdateResultDto;
@@ -32,7 +36,7 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     @Transactional
-    public RequestDto createRequest(Long userId, Long eventId) throws UserNotFoundException, EventNotFoundException, RequestAlreadyExistsException, ParticipantLimitExceededException {
+    public RequestDto createRequest(Long userId, Long eventId) throws UserNotFoundException, EventNotFoundException, RequestAlreadyExistsException, ParticipantLimitExceededException, RequestSelfAttendException, EventNotPublishedException {
         log.info("Main-server. createRequest input: userId = {}, eventId = {}", userId, eventId);
 
         User user = userRepository.findById(userId)
@@ -42,26 +46,32 @@ public class RequestServiceImpl implements RequestService {
                 .orElseThrow(() -> new EventNotFoundException("Event not found"));
 
         if (requestRepository.existsByRequesterIdAndEventId(userId, eventId)) {
-            throw new RequestAlreadyExistsException("Request already exists");
+            throw new RequestAlreadyExistsException("Request for eventId = %d by userId = %d already exists".formatted(eventId, userId));
         }
 
-//        if (event.getInitiator().getId().equals(userId)) {
-//            throw new SelfRequestException("Cannot request to your own event");
-//        }
-//        if (event.getState() != EventState.PUBLISHED) {
-//            throw new EventNotPublishedException("Event is not published");
-//        }
-
-        Long confirmedCount = requestRepository.countConfirmedRequests(eventId);
-        if (event.getParticipantLimit() > 0 && confirmedCount >= event.getParticipantLimit()) {
-            throw new ParticipantLimitExceededException("Participant limit exceeded");
+        if (event.getInitiator().getId().equals(userId)) {
+            throw new RequestSelfAttendException("Cannot request to your own event");
         }
+
+        if (event.getState() != EventState.PUBLISHED) {
+            throw new EventNotPublishedException("Event is not published yet");
+        }
+
+        if (event.getParticipantLimit() != 0) {
+            Long confirmedCount = requestRepository.countByEventIdAndStatus(eventId, RequestStatus.CONFIRMED);
+            if (event.getParticipantLimit() > 0 && confirmedCount >= event.getParticipantLimit()) {
+                throw new ParticipantLimitExceededException("Participant limit " + event.getParticipantLimit() + " exceeded for event " + eventId);
+            }
+            event.setConfirmedRequests(confirmedCount);
+        }
+
+        RequestStatus status = determineRequestStatus(event);
 
         Request request = Request.builder()
                 .created(LocalDateTime.now())
                 .event(event)
                 .requester(user)
-                .status(event.getRequestModeration() ? RequestStatus.PENDING : RequestStatus.CONFIRMED)
+                .status(status)
                 .build();
 
         Request savedRequest = requestRepository.save(request);
@@ -71,19 +81,39 @@ public class RequestServiceImpl implements RequestService {
         return requestMapper.toDto(savedRequest);
     }
 
+    private RequestStatus determineRequestStatus(Event event) {
+        // Если модерация отключена или лимит не установлен, то автоматическое подтверждение
+        if (!event.getRequestModeration() || event.getParticipantLimit() == 0) {
+            return RequestStatus.CONFIRMED;
+        }
+        return RequestStatus.PENDING;
+    }
+
     @Override
     @Transactional
-    public RequestStatusUpdateResultDto updateRequests(Long userId, Long eventId, RequestStatusUpdateDto requestStatusUpdateDto) throws EventNotFoundException {
+    public RequestStatusUpdateResultDto updateRequests(Long userId, Long eventId, RequestStatusUpdateDto requestStatusUpdateDto) throws EventNotFoundException, EventNotPublishedException, ParticipantLimitExceededException {
         //        если для события лимит заявок равен 0 или отключена пре-модерация заявок, то подтверждение заявок не требуется
         //        нельзя подтвердить заявку, если уже достигнут лимит по заявкам на данное событие (Ожидается код ошибки 409)
         //        статус можно изменить только у заявок, находящихся в состоянии ожидания (Ожидается код ошибки 409)
         //        если при подтверждении данной заявки, лимит заявок для события исчерпан, то все неподтверждённые заявки необходимо отклонить
-        Event event = eventRepository.findByIdAndInitiatorId(eventId, userId)
-                .orElseThrow(() -> new EventNotFoundException("Event not found or access denied"));
+        log.info("Main-server. updateRequests input: userId = {}, eventId = {}, RequestStatusUpdateDto = {}", userId, eventId, requestStatusUpdateDto);
 
-//        if (event.getState() != EventState.PUBLISHED) {
-//            throw new EventNotPublishedException("Event is not published");
-//        }
+        Event event = eventRepository.findByIdAndInitiatorId(eventId, userId)
+                .orElseThrow(() -> new EventNotFoundException("EventId = %d by userId = %d".formatted(eventId, userId)));
+
+        if (!event.getRequestModeration() && requestStatusUpdateDto == null) {
+            return new RequestStatusUpdateResultDto();
+        }
+
+        if (event.getState() != EventState.PUBLISHED) {
+            throw new EventNotPublishedException("Event is not published");
+        }
+
+        Long confirmedCount = requestRepository.countConfirmedRequests(eventId);
+        if (event.getParticipantLimit() > 0 && confirmedCount >= event.getParticipantLimit()) {
+            throw new ParticipantLimitExceededException("Participant limit exceeded");
+        }
+
         requestRepository.updateRequestsStatus(
                 requestStatusUpdateDto.getRequestIds(),
                 eventId,
@@ -102,9 +132,13 @@ public class RequestServiceImpl implements RequestService {
                 RequestStatus.REJECTED
         );
 
+        List<ParticipationRequestDto> confirmedRequestsList = requestMapper.toParticipationDtoList(confirmedRequests);
+        List<ParticipationRequestDto> rejectedRequestsList = requestMapper.toParticipationDtoList(rejectedRequests);
+        log.info("Main-server. updateRequests success: confirmedRequests = {}, rejectedRequests = {}", confirmedRequestsList.size(), rejectedRequestsList.size());
+
         return RequestStatusUpdateResultDto.builder()
-                .confirmedRequests(requestMapper.toParticipationDtoList(confirmedRequests))
-                .rejectedRequests(requestMapper.toParticipationDtoList(rejectedRequests))
+                .confirmedRequests(confirmedRequestsList)
+                .rejectedRequests(rejectedRequestsList)
                 .build();
     }
 
@@ -142,7 +176,7 @@ public class RequestServiceImpl implements RequestService {
         log.info("Main-server. getRequestsByOwnerOfEvent input: userId = {}, eventId = {}", userId, eventId);
 
         Event event = eventRepository.findByIdAndInitiatorId(eventId, userId)
-                .orElseThrow(() -> new EventNotFoundException("Event not found or access denied"));
+                .orElseThrow(() -> new EventNotFoundException("Event not found for user"));
 
         List<Request> requests = requestRepository.findByEventIdAndEvent_InitiatorId(eventId, userId);
 

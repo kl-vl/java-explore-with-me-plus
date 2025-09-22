@@ -16,6 +16,7 @@ import ru.practicum.stats.service.StatsService;
 import ru.practicum.stats.ViewStatsDto;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 
 import static ru.practicum.stats.StatsServerConst.DATE_TIME_PATTERN;
@@ -32,6 +33,9 @@ public class StatsController {
                                        @RequestParam @DateTimeFormat(pattern = DATE_TIME_PATTERN) LocalDateTime end,
                                        @RequestParam(required = false, defaultValue = "") List<String> uris,
                                        @RequestParam(required = false, defaultValue = "false") Boolean unique) {
+        if (uris == null) {
+            uris = Collections.emptyList();
+        }
         return service.getStat(start, end, uris, unique);
     }
 
