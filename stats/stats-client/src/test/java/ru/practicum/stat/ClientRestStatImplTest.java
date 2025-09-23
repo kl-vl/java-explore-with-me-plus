@@ -14,6 +14,7 @@ import ru.practicum.stats.ViewStatsDto;
 
 import java.net.URI;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -96,7 +97,7 @@ public class ClientRestStatImplTest {
 
     @Test
     void getStat_ShouldReturnStatsList_WhenUrisProvided() {
-        String[] uris = {"/events/1", "/events/2"};
+        List<String> uris = List.of("/events/1", "/events/2");
         ViewStatsDto stats1 = new ViewStatsDto("app1", "/events/1", 10L);
         ViewStatsDto stats2 = new ViewStatsDto("app1", "/events/2", 5L);
         ViewStatsDto[] statsArray = {stats1, stats2};
@@ -127,7 +128,7 @@ public class ClientRestStatImplTest {
         when(responseSpec.toEntity(ViewStatsDto[].class))
                 .thenReturn(ResponseEntity.ok(statsArray));
 
-        List<ViewStatsDto> result = clientRestStat.getStat(testStart, testEnd, null, false);
+        List<ViewStatsDto> result = clientRestStat.getStat(testStart, testEnd, Collections.emptyList(), false);
 
         assertEquals(1, result.size());
         assertEquals("/events", result.get(0).getUri());
@@ -142,7 +143,7 @@ public class ClientRestStatImplTest {
         when(responseSpec.toEntity(ViewStatsDto[].class))
                 .thenReturn(ResponseEntity.ok(null));
 
-        List<ViewStatsDto> result = clientRestStat.getStat(testStart, testEnd, new String[]{}, true);
+        List<ViewStatsDto> result = clientRestStat.getStat(testStart, testEnd, List.of(), true);
 
         assertNotNull(result);
         assertTrue(result.isEmpty());
@@ -156,7 +157,7 @@ public class ClientRestStatImplTest {
         when(responseSpec.toEntity(ViewStatsDto[].class))
                 .thenReturn(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null));
 
-        List<ViewStatsDto> result = clientRestStat.getStat(testStart, testEnd, null, false);
+        List<ViewStatsDto> result = clientRestStat.getStat(testStart, testEnd, Collections.emptyList(), false);
 
         assertNotNull(result);
         assertTrue(result.isEmpty());

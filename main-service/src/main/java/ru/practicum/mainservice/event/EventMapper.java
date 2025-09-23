@@ -40,9 +40,9 @@ public interface EventMapper {
     @Mapping(target = "views", ignore = true)
     Event toEvent(EventDto eventDto);
 
-    @Mapping(target = "category", ignore = true) // Обрабатывается отдельно
-    @Mapping(target = "initiator", ignore = true) // Обрабатывается отдельно
-    @Mapping(target = "location", ignore = true) // Обрабатывается отдельно
+    @Mapping(target = "category", ignore = true)
+    @Mapping(target = "initiator", ignore = true)
+    @Mapping(target = "location", ignore = true)
     @Mapping(target = "state", ignore = true)
     @Mapping(target = "createdOn", ignore = true)
     @Mapping(target = "publishedOn", ignore = true)

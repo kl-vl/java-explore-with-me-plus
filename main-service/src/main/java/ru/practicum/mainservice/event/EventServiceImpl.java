@@ -27,17 +27,21 @@ import ru.practicum.mainservice.exception.EventAlreadyPublishedException;
 import ru.practicum.mainservice.exception.EventCanceledCantPublishException;
 import ru.practicum.mainservice.exception.EventDateException;
 import ru.practicum.mainservice.exception.EventNotFoundException;
-import ru.practicum.mainservice.exception.EventValidationException;
 import ru.practicum.mainservice.exception.PaginatorValidationException;
 import ru.practicum.mainservice.exception.UserNotFoundException;
 import ru.practicum.mainservice.location.Location;
 import ru.practicum.mainservice.location.LocationRepository;
+import ru.practicum.mainservice.request.RequestRepository;
+import ru.practicum.mainservice.request.dto.ConfirmedRequestsCount;
 import ru.practicum.mainservice.user.User;
 import ru.practicum.mainservice.user.UserRepository;
 import ru.practicum.stats.ClientRestStat;
+import ru.practicum.stats.EndpointHitDto;
+import ru.practicum.stats.ViewStatsDto;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -53,18 +57,11 @@ public class EventServiceImpl implements EventService {
     private final CategoryRepository categoryRepository;
     private final UserRepository userRepository;
     private final LocationRepository locationRepository;
+    private final RequestRepository requestRepository;
 
     private void validateFilter(EventFilterBase filter) throws PaginatorValidationException, EventDateException {
 
         validateDateRange(filter.getRangeStart(), filter.getRangeEnd());
-
-        // TODO Для поиска такая проверка не нужна, проверить на полных тестах
-        //
-        //        if (filter instanceof EventFilterPublic) {
-        //            if (filter.getRangeStart() != null && filter.getRangeStart().isBefore(LocalDateTime.now())) {
-        //                throw new EventDateException("Start date cannot be in the past");
-        //            }
-        //        }
 
         Errors errors = new BeanPropertyBindingResult(filter, "filter");
         ValidationUtils.invokeValidator(validator, filter, errors);
@@ -103,10 +100,6 @@ public class EventServiceImpl implements EventService {
     }
 
     private void addHit(HttpServletRequest request) {
-        // TODO пока отключен вызов, доделываем локально всё в main-service
-        return;
-/*
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         EndpointHitDto endpointHitDto = EndpointHitDto.builder()
                 .app("main-service")
                 .uri(request.getRequestURI())
@@ -114,16 +107,66 @@ public class EventServiceImpl implements EventService {
                 .timestamp(LocalDateTime.now())
                 .build();
         clientRestStat.addStat(endpointHitDto);
-*/
+    }
+
+    private void enrichEventsWithConfirmedRequests(List<EventDtoFull> events) {
+        if (events.isEmpty()) {
+            return;
+        }
+        List<Long> eventIds = events.stream()
+                .map(EventDtoFull::getId)
+                .collect(Collectors.toList());
+
+        List<ConfirmedRequestsCount> results = requestRepository.findConfirmedRequestsCountByEventIds(eventIds);
+        Map<Long, Long> confirmedRequestsMap = results.stream()
+                .collect(Collectors.toMap(
+                        ConfirmedRequestsCount::getEventId,
+                        ConfirmedRequestsCount::getCount
+                ));
+
+        events.forEach(event -> {
+            Long confirmedRequests = confirmedRequestsMap.getOrDefault(event.getId(), 0L);
+            event.setConfirmedRequests(confirmedRequests);
+        });
+    }
+
+    // Получение статистики по списку событий и обогащение views
+    private void enrichEventsWithViews(List<EventDtoFull> events, EventFilterAdmin eventFilter) {
+        if (events.isEmpty()) {
+            return;
+        }
+        List<Long> eventIds = events.stream()
+                .map(EventDtoFull::getId)
+                .toList();
+
+        List<String> uris = eventIds.stream()
+                .map(id -> "/events/" + id)
+                .collect(Collectors.toList());
+
+        LocalDateTime start = eventFilter.getRangeStart() != null ? eventFilter.getRangeStart() : LocalDateTime.now().minusDays(1);
+        LocalDateTime end = eventFilter.getRangeEnd() != null ? eventFilter.getRangeEnd() : LocalDateTime.now().plusDays(1);
+
+        List<ViewStatsDto> stats = clientRestStat.getStat(start, end, uris, true);
+
+        Map<String, Long> viewsByUri = stats.stream()
+                .collect(Collectors.toMap(
+                        ViewStatsDto::getUri,
+                        ViewStatsDto::getHits
+                ));
+
+        events.forEach(event -> {
+            String eventUri = "/events/" + event.getId();
+            Long views = viewsByUri.getOrDefault(eventUri, 0L);
+            event.setViews(views);
+        });
     }
 
     // Admin
     @Override
     public List<EventDtoFull> findEventsByUsers(EventFilterAdmin eventFilter) throws PaginatorValidationException, EventDateException {
-        //validatePaginator(eventFilter);
         validateFilter(eventFilter);
 
-        log.info("Main-server. findEventsByUsers input: filter = {}", eventFilter.toString());
+        log.info("Main-server. findEventsByUsers input: filter = {}", eventFilter);
 
         Specification<Event> specification = EventSpecifications.forAdminFilter(eventFilter);
 
@@ -132,6 +175,9 @@ public class EventServiceImpl implements EventService {
         Page<Event> pageEvents = eventRepository.findAll(specification, pageable);
         final List<EventDtoFull> events = getDtoFullList(pageEvents);
 
+        enrichEventsWithConfirmedRequests(events);
+        enrichEventsWithViews(events, eventFilter);
+
         log.info("Main-server. findEventsByUsers success: size = {}", events.size());
 
         return events;
@@ -139,7 +185,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     @Transactional
-    public EventDtoFull updateEventById(EventDto eventDto) throws EventNotFoundException, EventValidationException, EventDateException, EventAlreadyPublishedException, EventCanceledCantPublishException {
+    public EventDtoFull updateEventById(EventDto eventDto) throws EventNotFoundException, EventDateException, EventAlreadyPublishedException, EventCanceledCantPublishException {
         log.info("Main-server. updateEventById input: id = {}", eventDto.getId());
         Event event = eventRepository.findById(eventDto.getId())
                 .orElseThrow(() -> new EventNotFoundException("Event with id=%d was not found".formatted(eventDto.getId())));
@@ -167,13 +213,14 @@ public class EventServiceImpl implements EventService {
             if (eventDto.getStateAction().equals(EventStateAction.PUBLISH_EVENT)) {
                 event.setState(EventState.PUBLISHED);
                 event.setPublishedOn(LocalDateTime.now());
+                // прикладной логикой смена флага не управляется, как и в тестах постмана не участвует
+                //event.setRequestModeration(false);
             }
             if (eventDto.getStateAction().equals(EventStateAction.REJECT_EVENT)) {
                 event.setState(EventState.CANCELED);
             }
         }
 
-        //eventMapper.onUpdateEventFromDto(eventDto, event);
         eventMapper.updateEventFromDto(eventDto, event);
         Event updatedEvent = eventRepository.save(event);
 
@@ -190,8 +237,6 @@ public class EventServiceImpl implements EventService {
         log.info("Main-server. createEvent input: id = {}", eventDto.getDescription());
 
         setDefaultValues(eventDto);
-
-        //log.info("Main-server. createEvent input: eventMapper.toEvent(eventDto) = {}", eventMapper.toEvent(eventDto).toString());
 
         if (eventDto.getEventDate() != null && !eventDto.getEventDate().isAfter(LocalDateTime.now().plusHours(1))) {
             throw new EventDateException("Event date should be in 1+ hours after now");
@@ -223,7 +268,6 @@ public class EventServiceImpl implements EventService {
             event.setLocation(location);
         }
 
-        // TODO
         event.setState(EventState.PENDING);
         event.setCreatedOn(LocalDateTime.now());
         event.setConfirmedRequests(0L);
@@ -264,17 +308,15 @@ public class EventServiceImpl implements EventService {
     @Override
     @Transactional
     public EventDtoFull updateEventByUserId(EventDto eventDto) throws EventNotFoundException, EventDateException, EventCanceledCantPublishException {
-        log.info("Main-server. updateEventByUserId input: eventId = {}, userId = {}", eventDto.getId(), eventDto.getInitiator());
-
         // изменить можно только отмененные события или события в состоянии ожидания модерации (Ожидается код ошибки 409)
         //дата и время на которые намечено событие не может быть раньше, чем через два часа от текущего момента (Ожидается код ошибки 409)
+
+        log.info("Main-server. updateEventByUserId input: eventId = {}, userId = {}", eventDto.getId(), eventDto.getInitiator());
+
         if (eventDto.getEventDate() != null && !eventDto.getEventDate().isAfter(LocalDateTime.now().plusHours(2))) {
             throw new EventDateException("Event date should be in 2+ hours after now");
         }
 
-        // TODO в транзакции полный запрос со всеми связями не нужен
-        //        Event existingEvent = eventRepository.findByIdWithCategoryAndInitiator(eventDto.getId(), eventDto.getInitiator())
-        //                .orElseThrow(() -> new EventNotFoundException("Event with id " + eventDto.getId() + " not found"));
         Event existingEvent = eventRepository.findByIdAndInitiatorId(eventDto.getId(), eventDto.getInitiator())
                 .orElseThrow(() -> new EventNotFoundException("Event with id " + eventDto.getId() + " not found"));
 
@@ -282,7 +324,6 @@ public class EventServiceImpl implements EventService {
             throw new EventCanceledCantPublishException("Event can be edited only Pending or Canceled");
         }
 
-        //eventMapper.updateSimpleFieldsFromDto(eventDto, existingEvent);
         eventMapper.updateEventFromDto(eventDto, existingEvent);
 
         if (eventDto.getStateAction() != null) {
@@ -305,7 +346,7 @@ public class EventServiceImpl implements EventService {
             PaginatorValidationException, EventDateException {
         validateFilter(eventFilter);
 
-        log.info("Main-server. findEventsByUsers input: filter = {}", eventFilter.toString());
+        log.info("Main-server. findEventsByUsers input: filter = {}", eventFilter);
 
         // вызов stat-client
         addHit(request);
@@ -331,7 +372,26 @@ public class EventServiceImpl implements EventService {
 
         log.info("Main-server. findEventById success: eventId = {}", event.getId());
 
-        return eventMapper.toEventFullDto(event);
+        EventDtoFull eventDto = eventMapper.toEventFullDto(event);
+
+        // добавляем views из статистики
+        enrichEventWithAdditionalData(eventDto);
+
+        return eventDto;
+    }
+
+    private void enrichEventWithAdditionalData(EventDtoFull event) {
+        // confirmedRequests
+        Long confirmedRequests = requestRepository.countConfirmedRequests(event.getId());
+        log.info("Main-server. enrichEvent: eventId = {}, confirmedRequests = {} ", event.getId(), confirmedRequests);
+        event.setConfirmedRequests(confirmedRequests);
+
+        // views
+        String uri = "/events/" + event.getId();
+        List<ViewStatsDto> stats = clientRestStat.getStat(event.getCreatedOn(), LocalDateTime.now(), List.of(uri), true);
+        Long views = stats.isEmpty() ? 0L : stats.get(0).getHits();
+        log.info("Main-server. enrichEvent: eventId = {}, hits = {} ", event.getId(), views);
+        event.setViews(views);
     }
 
 }

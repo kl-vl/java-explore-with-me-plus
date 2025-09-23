@@ -21,7 +21,9 @@ import ru.practicum.mainservice.exception.CategoryNotFoundException;
 import ru.practicum.mainservice.exception.EventCanceledCantPublishException;
 import ru.practicum.mainservice.exception.EventDateException;
 import ru.practicum.mainservice.exception.EventNotFoundException;
+import ru.practicum.mainservice.exception.EventNotPublishedException;
 import ru.practicum.mainservice.exception.EventValidationException;
+import ru.practicum.mainservice.exception.ParticipantLimitExceededException;
 import ru.practicum.mainservice.exception.UserNotFoundException;
 import ru.practicum.mainservice.request.RequestService;
 import ru.practicum.mainservice.request.dto.RequestDto;
@@ -70,7 +72,7 @@ public class EventControllerPrivate {
     }
 
     /**
-     * Получение информации о запросах на участие в событии текущего пользователя
+     *  Получение информации о запросах на участие в событии текущего пользователя
      */
     @GetMapping("/{eventId}/requests")
     public List<RequestDto> getRequestsByOwnerOfEvent(@PathVariable @Positive Long userId, @PathVariable @Positive Long eventId) throws EventNotFoundException {
@@ -83,7 +85,7 @@ public class EventControllerPrivate {
     @PatchMapping("/{eventId}/requests")
     public RequestStatusUpdateResultDto updateRequests(@PathVariable @Positive Long userId,
                                                        @PathVariable @Positive Long eventId,
-                                                       @RequestBody @Validated RequestStatusUpdateDto requestStatusUpdateDto) throws EventNotFoundException {
+                                                       @RequestBody @Validated RequestStatusUpdateDto requestStatusUpdateDto) throws EventNotFoundException, EventNotPublishedException, ParticipantLimitExceededException {
         return requestService.updateRequests(userId, eventId, requestStatusUpdateDto);
     }
 

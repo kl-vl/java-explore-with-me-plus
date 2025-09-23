@@ -1,12 +1,9 @@
 package ru.practicum.mainservice.validation;
 
 public interface ValidationGroups {
-    interface Create {
-    }
+    interface Create {}
 
-    interface Update {
-    }
+    interface Update {}
 
-    interface CreateAndUpdate extends Create, Update {
-    }
+    interface CreateAndUpdate extends Create, Update {}
 }

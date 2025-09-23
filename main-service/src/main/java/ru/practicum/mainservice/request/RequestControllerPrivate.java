@@ -13,9 +13,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import ru.practicum.mainservice.exception.EventNotFoundException;
+import ru.practicum.mainservice.exception.EventNotPublishedException;
 import ru.practicum.mainservice.exception.ParticipantLimitExceededException;
 import ru.practicum.mainservice.exception.RequestAlreadyExistsException;
 import ru.practicum.mainservice.exception.RequestNotFoundException;
+import ru.practicum.mainservice.exception.RequestSelfAttendException;
 import ru.practicum.mainservice.exception.UserNotFoundException;
 import ru.practicum.mainservice.request.dto.RequestDto;
 
@@ -37,7 +39,7 @@ public class RequestControllerPrivate {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public RequestDto participationRequest(@PathVariable @Positive Long userId, @RequestParam @Positive Long eventId) throws UserNotFoundException, ParticipantLimitExceededException, EventNotFoundException, RequestAlreadyExistsException {
+    public RequestDto participationRequest(@PathVariable @Positive Long userId, @RequestParam @Positive Long eventId) throws UserNotFoundException, ParticipantLimitExceededException, EventNotFoundException, RequestAlreadyExistsException, RequestSelfAttendException, EventNotPublishedException {
         return requestService.createRequest(userId, eventId);
     }
 

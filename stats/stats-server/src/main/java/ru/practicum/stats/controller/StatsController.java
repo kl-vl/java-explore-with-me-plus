@@ -12,10 +12,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import ru.practicum.stats.EndpointHitDto;
+import ru.practicum.stats.exception.StartDateIsAfterEndDateException;
 import ru.practicum.stats.service.StatsService;
 import ru.practicum.stats.ViewStatsDto;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 
 import static ru.practicum.stats.StatsServerConst.DATE_TIME_PATTERN;
@@ -31,7 +33,10 @@ public class StatsController {
     public List<ViewStatsDto> getStats(@RequestParam @DateTimeFormat(pattern = DATE_TIME_PATTERN) LocalDateTime start,
                                        @RequestParam @DateTimeFormat(pattern = DATE_TIME_PATTERN) LocalDateTime end,
                                        @RequestParam(required = false, defaultValue = "") List<String> uris,
-                                       @RequestParam(required = false, defaultValue = "false") Boolean unique) {
+                                       @RequestParam(required = false, defaultValue = "false") Boolean unique) throws StartDateIsAfterEndDateException {
+        if (uris == null) {
+            uris = Collections.emptyList();
+        }
         return service.getStat(start, end, uris, unique);
     }
 

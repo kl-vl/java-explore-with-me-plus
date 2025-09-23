@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -19,9 +20,9 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 public class EventFilterBase {
-    /**
-     * public + admin
+    /** public + admin
      * список идентификаторов категорий в которых будет вестись поиск
      */
     private List<Long> categories;
@@ -36,6 +37,7 @@ public class EventFilterBase {
 
     // public + admin
     @PositiveOrZero
+    @Builder.Default
     private int from = 0;
 
     // public + admin

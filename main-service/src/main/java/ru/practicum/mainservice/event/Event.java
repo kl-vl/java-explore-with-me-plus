@@ -32,7 +32,6 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-//@ToString(exclude = {"category", "initiator"})
 @Builder
 public class Event {
     @Id
@@ -45,7 +44,7 @@ public class Event {
     @JoinColumn(name = "category_id", referencedColumnName = "id")
     private Category category;
 
-    // TODO не хранится в бд, считается по запросам
+    // Счетчик не обновляется в бд, считается по запросам на участие
     private Long confirmedRequests;
 
     @Column(name = "created_on")
@@ -76,7 +75,7 @@ public class Event {
 
     private String title;
 
-    // TODO Не хранится в бд, получается через клиента
+    // Не хранится в бд, получается через клиента из сервера статистики
     private Long views;
 
     @ManyToMany(mappedBy = "events")

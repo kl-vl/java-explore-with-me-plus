@@ -10,6 +10,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.context.request.WebRequest;
 import ru.practicum.stats.ErrorResponseDto;
+import ru.practicum.stats.handler.ErrorHandler;
 
 import java.util.Arrays;
 import java.util.Map;

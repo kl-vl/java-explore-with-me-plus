@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import ru.practicum.mainservice.event.enums.EventSort;
 
@@ -12,11 +13,11 @@ import ru.practicum.mainservice.event.enums.EventSort;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString(callSuper = true)
 public class EventFilterPublic extends EventFilterBase {
 
-    /**
-     * Public
-     * Текст для поиска в содержимом аннотации и подробном описании события
+    /** Public
+     *  Текст для поиска в содержимом аннотации и подробном описании события
      */
     private String text;
 
@@ -26,10 +27,9 @@ public class EventFilterPublic extends EventFilterBase {
     // Public
     private Boolean onlyAvailable;
 
-    /**
-     * Public
-     * Вариант сортировки: по дате события или по количеству просмотров
-     * Available values : EVENT_DATE, VIEWS
+    /** Public
+     *  Вариант сортировки: по дате события или по количеству просмотров
+     *  Available values : EVENT_DATE, VIEWS
      */
     private EventSort sort;
 

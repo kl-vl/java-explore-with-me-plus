@@ -10,10 +10,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import ru.practicum.mainservice.event.dto.EventFilterAdmin;
 import ru.practicum.mainservice.event.EventService;
 import ru.practicum.mainservice.event.dto.EventDto;
 import ru.practicum.mainservice.event.dto.EventDtoFull;
-import ru.practicum.mainservice.event.dto.EventFilterAdmin;
 import ru.practicum.mainservice.exception.EventAlreadyPublishedException;
 import ru.practicum.mainservice.exception.EventCanceledCantPublishException;
 import ru.practicum.mainservice.exception.EventDateException;
@@ -38,7 +38,7 @@ public class EventControllerAdmin {
 
     @PatchMapping("{eventId}")
     public EventDtoFull updateEventById(@PathVariable Long eventId,
-                                        @RequestBody @Validated(Default.class) EventDto eventDto) throws EventValidationException, EventNotFoundException, EventDateException, EventAlreadyPublishedException, EventCanceledCantPublishException {
+                                    @RequestBody @Validated(Default.class) EventDto eventDto) throws EventValidationException, EventNotFoundException, EventDateException, EventAlreadyPublishedException, EventCanceledCantPublishException {
         eventDto.setId(eventId);
         return eventService.updateEventById(eventDto);
     }
