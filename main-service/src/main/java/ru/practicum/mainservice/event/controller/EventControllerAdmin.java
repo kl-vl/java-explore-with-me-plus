@@ -19,7 +19,7 @@ import ru.practicum.mainservice.exception.EventCanceledCantPublishException;
 import ru.practicum.mainservice.exception.EventDateException;
 import ru.practicum.mainservice.exception.EventNotFoundException;
 import ru.practicum.mainservice.exception.EventValidationException;
-import ru.practicum.mainservice.exception.PaginatorValidationException;
+import ru.practicum.mainservice.exception.FilterValidationException;
 
 import java.util.List;
 
@@ -32,7 +32,7 @@ public class EventControllerAdmin {
     private final EventService eventService;
 
     @GetMapping
-    public List<EventDtoFull> findEvents(@Valid EventFilterAdmin eventFilterAdmin) throws PaginatorValidationException, EventDateException {
+    public List<EventDtoFull> findEvents(@Valid EventFilterAdmin eventFilterAdmin) throws FilterValidationException, EventDateException {
         return eventService.findEventsByUsers(eventFilterAdmin);
     }
 

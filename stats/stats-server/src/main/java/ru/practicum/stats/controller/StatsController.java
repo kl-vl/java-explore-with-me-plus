@@ -3,7 +3,6 @@ package ru.practicum.stats.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,15 +11,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import ru.practicum.stats.EndpointHitDto;
+import ru.practicum.stats.ViewStatsDto;
 import ru.practicum.stats.exception.StartDateIsAfterEndDateException;
 import ru.practicum.stats.service.StatsService;
-import ru.practicum.stats.ViewStatsDto;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
-
-import static ru.practicum.stats.StatsServerConst.DATE_TIME_PATTERN;
 
 @RestController
 @RequiredArgsConstructor
@@ -30,8 +27,9 @@ public class StatsController {
     private final StatsService service;
 
     @GetMapping("/stats")
-    public List<ViewStatsDto> getStats(@RequestParam @DateTimeFormat(pattern = DATE_TIME_PATTERN) LocalDateTime start,
-                                       @RequestParam @DateTimeFormat(pattern = DATE_TIME_PATTERN) LocalDateTime end,
+    // @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    public List<ViewStatsDto> getStats(@RequestParam LocalDateTime start,
+                                       @RequestParam LocalDateTime end,
                                        @RequestParam(required = false, defaultValue = "") List<String> uris,
                                        @RequestParam(required = false, defaultValue = "false") Boolean unique) throws StartDateIsAfterEndDateException {
         if (uris == null) {
