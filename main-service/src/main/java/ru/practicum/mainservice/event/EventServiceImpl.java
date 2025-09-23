@@ -58,6 +58,7 @@ public class EventServiceImpl implements EventService {
     private final UserRepository userRepository;
     private final LocationRepository locationRepository;
     private final RequestRepository requestRepository;
+    private List<ViewStatsDto> stats;
 
     private void validateFilter(EventFilterBase filter) throws FilterValidationException, EventDateException {
 
@@ -388,7 +389,7 @@ public class EventServiceImpl implements EventService {
 
         // views
         String uri = "/events/" + event.getId();
-        List<ViewStatsDto> stats = clientRestStat.getStat(event.getCreatedOn(), LocalDateTime.now(), List.of(uri), true);
+        List<ViewStatsDto> stats = clientRestStat.getStat(event.getCreatedOn().minusMinutes(1), LocalDateTime.now().plusMinutes(1), List.of(uri), true);
         Long views = stats.isEmpty() ? 0L : stats.get(0).getHits();
         log.info("Main-service. enrichEvent: eventId = {}, hits = {} ", event.getId(), views);
         event.setViews(views);
