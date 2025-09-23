@@ -18,8 +18,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.BatchSize;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 import ru.practicum.mainservice.event.Event;
 
 import java.util.Set;
@@ -43,7 +41,6 @@ public class Compilation {
     private String title;
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @Fetch(FetchMode.JOIN)
     @BatchSize(size = 10)
     @JoinTable(
             name = "compilation_event",

@@ -29,13 +29,9 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     @Transactional
     public CategoryDto createCategory(CategoryDto categoryDto) throws CategoryNameUniqueException, InvalidCategoryException {
-        if (categoryDto.getName() == null) {
-            throw new InvalidCategoryException("Category name must not be null");
-        }
-
         log.info("Main-service. createCategory input: name = {}", categoryDto.getName());
 
-        if (categoryDto.getName() != null && categoryRepository.existsByName(categoryDto.getName())) {
+        if (categoryRepository.existsByName(categoryDto.getName())) {
             throw new CategoryNameUniqueException("Category with name '" + categoryDto.getName() + "' already exists");
         }
 
@@ -55,18 +51,12 @@ public class CategoryServiceImpl implements CategoryService {
 
         log.info("Main-service. updateCategory input: id = {}, name = {}", categoryDto.getId(), categoryDto.getName());
 
-
         Category existingCategory = categoryRepository.findById(categoryDto.getId()).orElseThrow(() -> new CategoryNotFoundException("Category with id %s not found".formatted(categoryDto.getId())));
 
-        if (categoryDto.getName() != null &&
-                !categoryDto.getName().equals(existingCategory.getName()) &&
-                categoryRepository.existsByName(categoryDto.getName())) {
+        if (!categoryDto.getName().equals(existingCategory.getName()) && categoryRepository.existsByName(categoryDto.getName())) {
             throw new CategoryNameUniqueException("Category with name '" + categoryDto.getName() + "' already exists");
         }
-
-        if (categoryDto.getName() != null) {
-            existingCategory.setName(categoryDto.getName());
-        }
+        existingCategory.setName(categoryDto.getName());
 
         Category updatedCategory = categoryRepository.save(existingCategory);
 

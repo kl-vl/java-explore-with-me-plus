@@ -16,10 +16,9 @@ import ru.practicum.mainservice.event.EventRepository;
 import ru.practicum.mainservice.exception.CompilationNotFoundException;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -49,11 +48,10 @@ public class CompilationServiceImpl implements CompilationService {
     @Override
     public CompilationDto getById(Long compilationId) throws CompilationNotFoundException {
         log.info("Main-service. Get compilation by id = {}", compilationId);
-        Optional<Compilation> optionalCompilation = compilationRepository.findById(compilationId);
-        if (optionalCompilation.isEmpty()) {
-            throw new CompilationNotFoundException(String.format("Не найдена подборка с id=%d", compilationId));
-        }
-        Compilation compilation = optionalCompilation.get();
+
+        Compilation compilation = compilationRepository.findById(compilationId)
+                .orElseThrow(() -> new CompilationNotFoundException(String.format("Не найдена подборка с id=%d", compilationId)));
+
         log.info("Main-service. Get compilation by id success {}", compilation);
         return compilationMapper.toDto(compilation);
     }
@@ -62,11 +60,14 @@ public class CompilationServiceImpl implements CompilationService {
     @Transactional
     public void delete(Long compilationId) throws CompilationNotFoundException {
         log.info("Main-service. Delete compilation with id = {}", compilationId);
-        Optional<Compilation> optCompilation = compilationRepository.findById(compilationId);
-        if (optCompilation.isEmpty()) {
-            throw new CompilationNotFoundException(String.format("Не найдена подборка с id = %d", compilationId));
-        }
-        compilationRepository.delete(optCompilation.get());
+
+        Compilation compilation = compilationRepository.findById(compilationId)
+                .orElseThrow(() -> new CompilationNotFoundException(String.format("Не найдена подборка с id=%d", compilationId)));
+
+        compilationRepository.delete(compilation);
+
+        log.info("Main-service. Delete compilation success id = {}", compilationId);
+
     }
 
     @Override
@@ -92,11 +93,8 @@ public class CompilationServiceImpl implements CompilationService {
     @Transactional
     public CompilationDto update(Long compilationId, CompilationCreateDto compilationCreateDto) throws CompilationNotFoundException {
         log.info("Main-service. Update compilations id={} with {}", compilationId, compilationCreateDto);
-        Optional<Compilation> optCompilation = compilationRepository.findById(compilationId);
-        if (optCompilation.isEmpty()) {
-            throw new CompilationNotFoundException(String.format("Не найдена подборка с id = %d", compilationId));
-        }
-        Compilation compilation = optCompilation.get();
+        Compilation compilation = compilationRepository.findById(compilationId)
+                .orElseThrow(() -> new CompilationNotFoundException(String.format("Не найдена подборка с id=%d", compilationId)));
         if (compilationCreateDto.getPinned() != null) {
             compilation.setPinned(compilationCreateDto.getPinned());
         }
@@ -116,6 +114,6 @@ public class CompilationServiceImpl implements CompilationService {
         if (eventList.size() != ids.size()) {
             throw new IllegalArgumentException("Переданы несуществующие события");
         }
-        return eventList.stream().collect(Collectors.toSet());
+        return new HashSet<>(eventList);
     }
 }
