@@ -2,9 +2,10 @@ package ru.practicum.mainservice.user;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import ru.practicum.mainservice.config.CommonMapperConfiguration;
 import ru.practicum.mainservice.user.dto.UserDto;
 
-@Mapper(componentModel = "spring")
+@Mapper(config = CommonMapperConfiguration.class)
 public interface UserMapper {
 
     User toEntity(UserDto userDto);

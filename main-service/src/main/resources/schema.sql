@@ -1,4 +1,4 @@
--- TODO drop пока для разработки
+-- drop для разработки
 DROP TABLE IF EXISTS compilation_event CASCADE;
 DROP TABLE IF EXISTS request CASCADE;
 DROP TABLE IF EXISTS event CASCADE;

@@ -14,7 +14,7 @@ import ru.practicum.mainservice.event.EventService;
 import ru.practicum.mainservice.event.dto.EventDtoFull;
 import ru.practicum.mainservice.exception.EventDateException;
 import ru.practicum.mainservice.exception.EventNotFoundException;
-import ru.practicum.mainservice.exception.PaginatorValidationException;
+import ru.practicum.mainservice.exception.FilterValidationException;
 
 import java.util.List;
 
@@ -27,7 +27,7 @@ public class EventControllerPublic {
     private final EventService eventService;
 
     @GetMapping
-    public List<EventDtoFull> findEvents(@Valid EventFilterPublic eventFilterPublic, HttpServletRequest request) throws PaginatorValidationException, EventDateException {
+    public List<EventDtoFull> findEvents(@Valid EventFilterPublic eventFilterPublic, HttpServletRequest request) throws FilterValidationException, EventDateException {
         return eventService.findEvents(eventFilterPublic, request);
     }
 

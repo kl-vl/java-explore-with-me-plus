@@ -33,7 +33,7 @@ public class CategoryServiceImpl implements CategoryService {
             throw new InvalidCategoryException("Category name must not be null");
         }
 
-        log.info("Main-server. createCategory input: name = {}", categoryDto.getName());
+        log.info("Main-service. createCategory input: name = {}", categoryDto.getName());
 
         if (categoryDto.getName() != null && categoryRepository.existsByName(categoryDto.getName())) {
             throw new CategoryNameUniqueException("Category with name '" + categoryDto.getName() + "' already exists");
@@ -41,7 +41,7 @@ public class CategoryServiceImpl implements CategoryService {
 
         Category createdCategory = categoryRepository.save(categoryMapper.toEntity(categoryDto));
 
-        log.info("Main-server. createCategory success: id = {}", createdCategory.getId());
+        log.info("Main-service. createCategory success: id = {}", createdCategory.getId());
 
         return categoryMapper.toDto(createdCategory);
     }
@@ -53,7 +53,7 @@ public class CategoryServiceImpl implements CategoryService {
             throw new InvalidCategoryException("Category name must not be null");
         }
 
-        log.info("Main-server. updateCategory input: id = {}, name = {}", categoryDto.getId(), categoryDto.getName());
+        log.info("Main-service. updateCategory input: id = {}, name = {}", categoryDto.getId(), categoryDto.getName());
 
 
         Category existingCategory = categoryRepository.findById(categoryDto.getId()).orElseThrow(() -> new CategoryNotFoundException("Category with id %s not found".formatted(categoryDto.getId())));
@@ -70,7 +70,7 @@ public class CategoryServiceImpl implements CategoryService {
 
         Category updatedCategory = categoryRepository.save(existingCategory);
 
-        log.info("Main-server. updateCategory success: id = {}", updatedCategory.getId());
+        log.info("Main-service. updateCategory success: id = {}", updatedCategory.getId());
 
         return categoryMapper.toDto(updatedCategory);
     }
@@ -78,7 +78,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     @Transactional
     public boolean deleteCategory(Long catId) throws CategoryIsRelatedToEventException {
-        log.info("Main-server. deleteCategory input: id = {}", catId);
+        log.info("Main-service. deleteCategory input: id = {}", catId);
 
         if (eventRepository.existsByCategoryId(catId)) {
             throw new CategoryIsRelatedToEventException("Category is related to event");
@@ -86,14 +86,14 @@ public class CategoryServiceImpl implements CategoryService {
 
         categoryRepository.deleteById(catId);
 
-        log.info("Main-server. deleteCategory success: id = {}", catId);
+        log.info("Main-service. deleteCategory success: id = {}", catId);
 
         return true;
     }
 
     @Override
     public List<CategoryDto> findAllCategories(Integer from, Integer size) {
-        log.info("Main-server. findAllCategories input: from = {}, size = {}", from, size);
+        log.info("Main-service. findAllCategories input: from = {}, size = {}", from, size);
 
         Pageable pageable = PageRequest.of(from / size, size);
         Page<Category> categoryPage = categoryRepository.findAll(pageable);
@@ -102,18 +102,18 @@ public class CategoryServiceImpl implements CategoryService {
                 .map(categoryMapper::toDto)
                 .collect(Collectors.toList());
 
-        log.info("Main-server. findAllCategories success: size = {}", categories.size());
+        log.info("Main-service. findAllCategories success: size = {}", categories.size());
 
         return categories;
     }
 
     @Override
     public CategoryDto findCategoryById(Long catId) throws CategoryNotFoundException {
-        log.info("Main-server. findCategoryById input: catId = {}", catId);
+        log.info("Main-service. findCategoryById input: catId = {}", catId);
 
         Category category = categoryRepository.findById(catId).orElseThrow(() -> new CategoryNotFoundException("Category with id %s not found".formatted(catId)));
 
-        log.info("Main-server. findCategoryById success: id = {}", category.getId());
+        log.info("Main-service. findCategoryById success: id = {}", category.getId());
 
         return categoryMapper.toDto(category);
     }

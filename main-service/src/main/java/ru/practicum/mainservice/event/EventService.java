@@ -11,14 +11,14 @@ import ru.practicum.mainservice.exception.EventCanceledCantPublishException;
 import ru.practicum.mainservice.exception.EventNotFoundException;
 import ru.practicum.mainservice.exception.EventValidationException;
 import ru.practicum.mainservice.exception.EventDateException;
-import ru.practicum.mainservice.exception.PaginatorValidationException;
+import ru.practicum.mainservice.exception.FilterValidationException;
 import ru.practicum.mainservice.exception.UserNotFoundException;
 
 import java.util.List;
 
 public interface EventService {
     // Admin
-    List<EventDtoFull> findEventsByUsers(EventFilterAdmin eventFilter) throws PaginatorValidationException, EventDateException;
+    List<EventDtoFull> findEventsByUsers(EventFilterAdmin eventFilter) throws FilterValidationException, EventDateException;
 
     EventDtoFull updateEventById(EventDto eventDto) throws EventNotFoundException, EventValidationException, EventDateException, EventAlreadyPublishedException, EventCanceledCantPublishException;
 
@@ -32,7 +32,7 @@ public interface EventService {
     EventDtoFull updateEventByUserId(EventDto eventDto) throws EventNotFoundException, EventDateException, EventCanceledCantPublishException;
 
     //Public
-    List<EventDtoFull> findEvents(EventFilterPublic eventFilter, HttpServletRequest request) throws PaginatorValidationException, EventDateException;
+    List<EventDtoFull> findEvents(EventFilterPublic eventFilter, HttpServletRequest request) throws FilterValidationException, EventDateException;
 
     EventDtoFull findEventById(Long eventId, HttpServletRequest request) throws EventNotFoundException;
 

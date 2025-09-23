@@ -37,7 +37,7 @@ public class RequestServiceImpl implements RequestService {
     @Override
     @Transactional
     public RequestDto createRequest(Long userId, Long eventId) throws UserNotFoundException, EventNotFoundException, RequestAlreadyExistsException, ParticipantLimitExceededException, RequestSelfAttendException, EventNotPublishedException {
-        log.info("Main-server. createRequest input: userId = {}, eventId = {}", userId, eventId);
+        log.info("Main-service. createRequest input: userId = {}, eventId = {}", userId, eventId);
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
@@ -76,7 +76,7 @@ public class RequestServiceImpl implements RequestService {
 
         Request savedRequest = requestRepository.save(request);
 
-        log.info("Main-server. createRequest success {}", request.getId());
+        log.info("Main-service. createRequest success {}", request.getId());
 
         return requestMapper.toDto(savedRequest);
     }
@@ -96,7 +96,7 @@ public class RequestServiceImpl implements RequestService {
         //        нельзя подтвердить заявку, если уже достигнут лимит по заявкам на данное событие (Ожидается код ошибки 409)
         //        статус можно изменить только у заявок, находящихся в состоянии ожидания (Ожидается код ошибки 409)
         //        если при подтверждении данной заявки, лимит заявок для события исчерпан, то все неподтверждённые заявки необходимо отклонить
-        log.info("Main-server. updateRequests input: userId = {}, eventId = {}, RequestStatusUpdateDto = {}", userId, eventId, requestStatusUpdateDto);
+        log.info("Main-service. updateRequests input: userId = {}, eventId = {}, RequestStatusUpdateDto = {}", userId, eventId, requestStatusUpdateDto);
 
         Event event = eventRepository.findByIdAndInitiatorId(eventId, userId)
                 .orElseThrow(() -> new EventNotFoundException("EventId = %d by userId = %d".formatted(eventId, userId)));
@@ -134,7 +134,7 @@ public class RequestServiceImpl implements RequestService {
 
         List<ParticipationRequestDto> confirmedRequestsList = requestMapper.toParticipationDtoList(confirmedRequests);
         List<ParticipationRequestDto> rejectedRequestsList = requestMapper.toParticipationDtoList(rejectedRequests);
-        log.info("Main-server. updateRequests success: confirmedRequests = {}, rejectedRequests = {}", confirmedRequestsList.size(), rejectedRequestsList.size());
+        log.info("Main-service. updateRequests success: confirmedRequests = {}, rejectedRequests = {}", confirmedRequestsList.size(), rejectedRequestsList.size());
 
         return RequestStatusUpdateResultDto.builder()
                 .confirmedRequests(confirmedRequestsList)
@@ -145,42 +145,42 @@ public class RequestServiceImpl implements RequestService {
     @Override
     @Transactional
     public RequestDto cancelRequests(Long userId, Long requestId) throws RequestNotFoundException {
-        log.info("Main-server. cancelRequests input: userId = {}, requestId = {}", userId, requestId);
+        log.info("Main-service. cancelRequests input: userId = {}, requestId = {}", userId, requestId);
         Request request = requestRepository.findByIdAndRequesterId(requestId, userId)
                 .orElseThrow(() -> new RequestNotFoundException("Request not found"));
 
         request.setStatus(RequestStatus.CANCELED);
         Request updatedRequest = requestRepository.save(request);
 
-        log.info("Main-server. cancelRequests success: id = {}", updatedRequest.getId());
+        log.info("Main-service. cancelRequests success: id = {}", updatedRequest.getId());
 
         return requestMapper.toDto(updatedRequest);
     }
 
     @Override
     public List<RequestDto> getCurrentUserRequests(Long userId) throws UserNotFoundException {
-        log.info("Main-server. getCurrentUserRequests input: userId = {}", userId);
+        log.info("Main-service. getCurrentUserRequests input: userId = {}", userId);
 
         userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
         List<Request> requests = requestRepository.findByRequesterId(userId);
 
-        log.info("Main-server. getCurrentUserRequests success: size = {}", requests.size());
+        log.info("Main-service. getCurrentUserRequests success: size = {}", requests.size());
 
         return requestMapper.toDtoList(requests);
     }
 
     @Override
     public List<RequestDto> getRequestsByOwnerOfEvent(Long userId, Long eventId) throws EventNotFoundException {
-        log.info("Main-server. getRequestsByOwnerOfEvent input: userId = {}, eventId = {}", userId, eventId);
+        log.info("Main-service. getRequestsByOwnerOfEvent input: userId = {}, eventId = {}", userId, eventId);
 
         Event event = eventRepository.findByIdAndInitiatorId(eventId, userId)
                 .orElseThrow(() -> new EventNotFoundException("Event not found for user"));
 
         List<Request> requests = requestRepository.findByEventIdAndEvent_InitiatorId(eventId, userId);
 
-        log.info("Main-server. getRequestsByOwnerOfEvent success: size = {}", requests.size());
+        log.info("Main-service. getRequestsByOwnerOfEvent success: size = {}", requests.size());
 
         return requestMapper.toDtoList(requests);
     }

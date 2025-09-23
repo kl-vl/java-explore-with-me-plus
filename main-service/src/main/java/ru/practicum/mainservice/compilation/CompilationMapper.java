@@ -11,7 +11,7 @@ import ru.practicum.mainservice.event.EventMapper;
 import java.util.HashSet;
 import java.util.List;
 
-@Mapper(componentModel = "spring", uses = EventMapper.class, config = CommonMapperConfiguration.class)
+@Mapper(uses = EventMapper.class, config = CommonMapperConfiguration.class)
 public interface CompilationMapper {
     @BeforeMapping()
     default void validate(Compilation compilation) {

@@ -20,6 +20,7 @@ import ru.practicum.mainservice.exception.EventDateException;
 import ru.practicum.mainservice.exception.EventNotFoundException;
 import ru.practicum.mainservice.exception.EventNotPublishedException;
 import ru.practicum.mainservice.exception.EventValidationException;
+import ru.practicum.mainservice.exception.FilterValidationException;
 import ru.practicum.mainservice.exception.ParticipantLimitExceededException;
 import ru.practicum.mainservice.exception.RequestAlreadyExistsException;
 import ru.practicum.mainservice.exception.RequestSelfAttendException;
@@ -63,7 +64,8 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler({EventDateException.class,
-            MissingServletRequestParameterException.class})
+            MissingServletRequestParameterException.class,
+            FilterValidationException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponseDto errorHandlerIncorrectDataExceptions(final Exception ex, final WebRequest request) {
 

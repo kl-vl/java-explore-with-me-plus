@@ -1,8 +1,9 @@
 package ru.practicum.mainservice.category;
 
 import org.mapstruct.Mapper;
+import ru.practicum.mainservice.config.CommonMapperConfiguration;
 
-@Mapper(componentModel = "spring")
+@Mapper(config = CommonMapperConfiguration.class)
 public interface CategoryMapper {
 
     //@Mapping(target = "id", ignore = true)
