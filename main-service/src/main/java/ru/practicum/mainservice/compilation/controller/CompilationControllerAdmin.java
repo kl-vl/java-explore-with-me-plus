@@ -38,7 +38,7 @@ public class CompilationControllerAdmin {
     }
 
     @PatchMapping(path = "/{compilationId}")
-    public CompilationDto update(@RequestBody CompilationCreateDto compilationCreateDto,
+    public CompilationDto update(@RequestBody @Validated({ValidationGroups.Update.class}) CompilationCreateDto compilationCreateDto,
                                  @PathVariable @Positive Long compilationId) throws CompilationNotFoundException {
         return compilationService.update(compilationId, compilationCreateDto);
     }
