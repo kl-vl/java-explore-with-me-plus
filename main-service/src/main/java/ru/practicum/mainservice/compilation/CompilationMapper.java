@@ -20,6 +20,16 @@ public interface CompilationMapper {
         }
     }
 
+    @BeforeMapping()
+    default void validate(CompilationCreateDto compilation) {
+        if ((compilation != null) && (compilation.getEvents() == null)) {
+            compilation.setEvents(new HashSet<>());
+        }
+        if ((compilation != null) && (compilation.getPinned() == null)) {
+            compilation.setPinned(false);
+        }
+    }
+
     Compilation toEntity(CompilationDto compilationDto);
 
     @Mapping(target = "events", source = "events", ignore = true)
