@@ -18,7 +18,7 @@ class StatsServerApplicationTests {
 
     @Test
     void mainContextTest() {
-        // Тест проверяет, что контекст Spring успешно загружается
+        // контекст Spring успешно загружается
         assertDoesNotThrow(() -> StatsServerApplication.main(new String[]{}));
     }
 }

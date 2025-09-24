@@ -5,9 +5,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.stats.EndpointHitDto;
+import ru.practicum.stats.exception.StartDateIsAfterEndDateException;
+import ru.practicum.stats.model.EndpointHitEntity;
 import ru.practicum.stats.ViewStatsDto;
 import ru.practicum.stats.mapper.EndpointHitMapper;
-import ru.practicum.stats.model.EndpointHitEntity;
 import ru.practicum.stats.repository.StatsServerRepository;
 
 import java.time.LocalDateTime;
@@ -19,6 +20,7 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class StatsServiceImpl implements StatsService {
     private final StatsServerRepository statsServerRepository;
+    //@Qualifier("endpointHitMapperImpl")
     private final EndpointHitMapper endpointHitMapper;
 
     @Override
@@ -37,8 +39,12 @@ public class StatsServiceImpl implements StatsService {
     }
 
     @Override
-    public List<ViewStatsDto> getStat(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique) {
+    public List<ViewStatsDto> getStat(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique) throws StartDateIsAfterEndDateException {
         log.info("Stats-server. getStat input: uris = {}, from {} to {}, unique = {}", uris.toString(), start, end, unique);
+
+        if (start.isAfter(end)) {
+            throw new StartDateIsAfterEndDateException("Start date " + start + " cannot be after end date " + end);
+        }
 
         List<ViewStatsDto> list = statsServerRepository.getViewStats(uris, start, end, unique);
 
