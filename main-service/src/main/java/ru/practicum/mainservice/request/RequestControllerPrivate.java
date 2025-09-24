@@ -32,7 +32,6 @@ public class RequestControllerPrivate {
     private final RequestService requestService;
 
     @GetMapping
-
     public List<RequestDto> getParticipationRequest(@PathVariable @Positive Long userId) throws UserNotFoundException {
         return requestService.getCurrentUserRequests(userId);
     }

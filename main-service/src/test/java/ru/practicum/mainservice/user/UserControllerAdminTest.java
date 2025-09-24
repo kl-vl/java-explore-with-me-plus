@@ -25,7 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest({UserControllerAdmin.class})
 @ContextConfiguration(classes = {UserControllerAdmin.class, UserServiceImpl.class})
-public class UserControllerTest {
+public class UserControllerAdminTest {
 
     @Autowired
     private MockMvc mockMvc;
