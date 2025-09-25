@@ -13,6 +13,7 @@ import org.springframework.web.context.request.WebRequest;
 import ru.practicum.mainservice.exception.CategoryIsRelatedToEventException;
 import ru.practicum.mainservice.exception.CategoryNameUniqueException;
 import ru.practicum.mainservice.exception.CategoryNotFoundException;
+import ru.practicum.mainservice.exception.CommentNotFoundException;
 import ru.practicum.mainservice.exception.CompilationNotFoundException;
 import ru.practicum.mainservice.exception.EventAlreadyPublishedException;
 import ru.practicum.mainservice.exception.EventCanceledCantPublishException;
@@ -56,7 +57,12 @@ public class ErrorHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponseDto handleInternalControllerValidationExceptions(final MethodArgumentNotValidException ex, WebRequest request) {
-        Map<String, String> errors = ex.getBindingResult().getFieldErrors().stream().collect(Collectors.toMap(FieldError::getField, fieldError -> Optional.ofNullable(fieldError.getDefaultMessage()).orElse("Invalid value")));
+        Map<String, String> errors = ex.getBindingResult().getFieldErrors().stream()
+                .collect(Collectors.toMap(
+                        FieldError::getField,
+                        fieldError -> Optional.ofNullable(fieldError.getDefaultMessage()).orElse("Invalid value"),
+                        (existingMessage, newMessage) -> existingMessage + "; " + newMessage
+                ));
 
         log.warn("Method argument validation error in {} : {}", request.getDescription(false), errors, ex);
 
@@ -80,7 +86,8 @@ public class ErrorHandler {
 
     @ExceptionHandler({CategoryNotFoundException.class,
             EventNotFoundException.class,
-            CompilationNotFoundException.class})
+            CompilationNotFoundException.class,
+            CommentNotFoundException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponseDto errorHandlerNotFound(final Exception ex, final WebRequest request) {
 

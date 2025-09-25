@@ -20,7 +20,6 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class StatsServiceImpl implements StatsService {
     private final StatsServerRepository statsServerRepository;
-    //@Qualifier("endpointHitMapperImpl")
     private final EndpointHitMapper endpointHitMapper;
 
     @Override

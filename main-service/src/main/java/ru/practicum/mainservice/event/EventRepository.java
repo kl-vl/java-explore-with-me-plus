@@ -20,11 +20,6 @@ public interface EventRepository extends JpaRepository<Event, Long>, JpaSpecific
 
     Optional<Event> findByIdAndState(Long eventId, EventState eventState);
 
-//    @Query("SELECT e FROM Event e " +
-//            "LEFT JOIN FETCH e.category " +
-//            "LEFT JOIN FETCH e.initiator " +
-//            "LEFT JOIN FETCH e.location " +
-//            "WHERE e.id = :id AND e.initiator.id = :initiatorId")
     @Query("SELECT e FROM Event e WHERE e.id = :id AND e.initiator.id = :initiatorId")
     Optional<Event> findByIdWithCategoryAndInitiator(@Param("id") Long id,
                                                      @Param("initiatorId") Long initiatorId);
