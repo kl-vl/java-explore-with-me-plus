@@ -9,7 +9,7 @@
 	},
 	"item": [
 		{
-			"name": "Comment Controller Private API",
+			"name": "Comment Private API",
 			"item": [
 				{
 					"name": "Добавление нового пользователя",
@@ -924,7 +924,7 @@
 			]
 		},
 		{
-			"name": "Comment Public",
+			"name": "Comment Public API",
 			"item": [
 				{
 					"name": "Добавление нового пользователя",
@@ -1402,6 +1402,10 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "Comments",
+			"item": []
 		}
 	],
 	"event": [
