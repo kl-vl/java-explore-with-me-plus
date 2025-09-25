@@ -6,8 +6,7 @@ import jakarta.validation.constraints.Null;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import ru.practicum.mainservice.event.enums.EventStateAction;
 import ru.practicum.mainservice.location.LocationDto;
 import ru.practicum.mainservice.validation.ValidationGroups;
@@ -19,6 +18,9 @@ import java.time.LocalDateTime;
  */
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class EventDto {
 
     @Null(groups = ValidationGroups.Create.class)
