@@ -106,9 +106,9 @@
 									}
 								},
 								"url": {
-									"raw": "{{base_url}}/admin/users",
+									"raw": "{{baseUrl}}/admin/users",
 									"host": [
-										"{{base_url}}"
+										"{{baseUrl}}"
 									],
 									"path": [
 										"admin",
@@ -240,9 +240,9 @@
 									}
 								},
 								"url": {
-									"raw": "{{base_url}}/users/:userId/events",
+									"raw": "{{baseUrl}}/users/:userId/events",
 									"host": [
-										"{{base_url}}"
+										"{{baseUrl}}"
 									],
 									"path": [
 										"users",
@@ -289,6 +289,13 @@
 										"packages": {},
 										"requests": {}
 									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"packages": {},
+										"type": "text/javascript"
+									}
 								}
 							],
 							"request": {
@@ -304,9 +311,9 @@
 									"raw": "{\n  \"text\": \"This is was a great event!\"\n}"
 								},
 								"url": {
-									"raw": "{{base_url}}/users/{{userId}}/comments/events/{{eventId}}",
+									"raw": "{{baseUrl}}/users/{{userId}}/comments/events/{{eventId}}",
 									"host": [
-										"{{base_url}}"
+										"{{baseUrl}}"
 									],
 									"path": [
 										"users",
@@ -364,9 +371,9 @@
 									}
 								},
 								"url": {
-									"raw": "{{base_url}}/users/{{userId}}/comments/{{commentId}}/events/{{eventId}}",
+									"raw": "{{baseUrl}}/users/{{userId}}/comments/{{commentId}}/events/{{eventId}}",
 									"host": [
-										"{{base_url}}"
+										"{{baseUrl}}"
 									],
 									"path": [
 										"users",
@@ -415,9 +422,9 @@
 									}
 								],
 								"url": {
-									"raw": "{{base_url}}/users/{{userId}}/comments",
+									"raw": "{{baseUrl}}/users/{{userId}}/comments",
 									"host": [
-										"{{base_url}}"
+										"{{baseUrl}}"
 									],
 									"path": [
 										"users",
@@ -450,9 +457,9 @@
 								"method": "DELETE",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/users/{{userId}}/comments/{{commentId}}/events/{{eventId}}",
+									"raw": "{{baseUrl}}/users/{{userId}}/comments/{{commentId}}/events/{{eventId}}",
 									"host": [
-										"{{base_url}}"
+										"{{baseUrl}}"
 									],
 									"path": [
 										"users",
@@ -563,9 +570,9 @@
 									}
 								},
 								"url": {
-									"raw": "{{base_url}}/admin/users",
+									"raw": "{{baseUrl}}/admin/users",
 									"host": [
-										"{{base_url}}"
+										"{{baseUrl}}"
 									],
 									"path": [
 										"admin",
@@ -697,9 +704,9 @@
 									}
 								},
 								"url": {
-									"raw": "{{base_url}}/users/:userId/events",
+									"raw": "{{baseUrl}}/users/:userId/events",
 									"host": [
-										"{{base_url}}"
+										"{{baseUrl}}"
 									],
 									"path": [
 										"users",
@@ -761,9 +768,9 @@
 									"raw": "{\n  \"text\": \"This is was a great event!\"\n}"
 								},
 								"url": {
-									"raw": "{{base_url}}/users/{{userId}}/comments/events/{{eventId}}",
+									"raw": "{{baseUrl}}/users/{{userId}}/comments/events/{{eventId}}",
 									"host": [
-										"{{base_url}}"
+										"{{baseUrl}}"
 									],
 									"path": [
 										"users",
@@ -819,9 +826,9 @@
 									}
 								],
 								"url": {
-									"raw": "{{base_url}}/admin/comments/{{commentId}}",
+									"raw": "{{baseUrl}}/admin/comments/{{commentId}}",
 									"host": [
-										"{{base_url}}"
+										"{{baseUrl}}"
 									],
 									"path": [
 										"admin",
@@ -877,9 +884,9 @@
 									}
 								},
 								"url": {
-									"raw": "{{base_url}}/admin/comments/{{commentId}}",
+									"raw": "{{baseUrl}}/admin/comments/{{commentId}}",
 									"host": [
-										"{{base_url}}"
+										"{{baseUrl}}"
 									],
 									"path": [
 										"admin",
@@ -933,9 +940,9 @@
 									}
 								],
 								"url": {
-									"raw": "{{base_url}}/admin/comments/{{commentId}}",
+									"raw": "{{baseUrl}}/admin/comments/{{commentId}}",
 									"host": [
-										"{{base_url}}"
+										"{{baseUrl}}"
 									],
 									"path": [
 										"admin",
@@ -967,9 +974,9 @@
 								"method": "DELETE",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/admin/comments/{{commentId}}",
+									"raw": "{{baseUrl}}/admin/comments/{{commentId}}",
 									"host": [
-										"{{base_url}}"
+										"{{baseUrl}}"
 									],
 									"path": [
 										"admin",
@@ -1077,9 +1084,9 @@
 									}
 								},
 								"url": {
-									"raw": "{{base_url}}/admin/users",
+									"raw": "{{baseUrl}}/admin/users",
 									"host": [
-										"{{base_url}}"
+										"{{baseUrl}}"
 									],
 									"path": [
 										"admin",
@@ -1211,9 +1218,9 @@
 									}
 								},
 								"url": {
-									"raw": "{{base_url}}/users/:userId/events",
+									"raw": "{{baseUrl}}/users/:userId/events",
 									"host": [
-										"{{base_url}}"
+										"{{baseUrl}}"
 									],
 									"path": [
 										"users",
@@ -1275,9 +1282,9 @@
 									"raw": "{\n  \"text\": \"This is was a great event!\"\n}"
 								},
 								"url": {
-									"raw": "{{base_url}}/users/{{userId}}/comments/events/{{eventId}}",
+									"raw": "{{baseUrl}}/users/{{userId}}/comments/events/{{eventId}}",
 									"host": [
-										"{{base_url}}"
+										"{{baseUrl}}"
 									],
 									"path": [
 										"users",
@@ -1333,9 +1340,9 @@
 									"raw": "{\n  \"text\": \"This is was a great event!\"\n}"
 								},
 								"url": {
-									"raw": "{{base_url}}/users/{{userId}}/comments/events/{{eventId}}",
+									"raw": "{{baseUrl}}/users/{{userId}}/comments/events/{{eventId}}",
 									"host": [
-										"{{base_url}}"
+										"{{baseUrl}}"
 									],
 									"path": [
 										"users",
@@ -1393,9 +1400,9 @@
 									}
 								},
 								"url": {
-									"raw": "{{base_url}}/admin/comments/{{commentId}}",
+									"raw": "{{baseUrl}}/admin/comments/{{commentId}}",
 									"host": [
-										"{{base_url}}"
+										"{{baseUrl}}"
 									],
 									"path": [
 										"admin",
@@ -1447,9 +1454,9 @@
 									}
 								],
 								"url": {
-									"raw": "{{base_url}}/events/{{eventId}}/comments",
+									"raw": "{{baseUrl}}/events/{{eventId}}/comments",
 									"host": [
-										"{{base_url}}"
+										"{{baseUrl}}"
 									],
 									"path": [
 										"events",
@@ -1662,20 +1669,8 @@
 	],
 	"variable": [
 		{
-			"key": "id",
-			"value": "1"
-		},
-		{
-			"key": "base_url",
+			"key": "baseUrl",
 			"value": "https://template.postman-echo.com"
-		},
-		{
-			"key": "adminUri",
-			"value": ""
-		},
-		{
-			"key": "commentId",
-			"value": ""
 		},
 		{
 			"key": "uid",
