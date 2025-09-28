@@ -10,21 +10,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
-import ru.practicum.mainservice.exception.CategoryIsRelatedToEventException;
-import ru.practicum.mainservice.exception.CategoryNameUniqueException;
-import ru.practicum.mainservice.exception.CategoryNotFoundException;
-import ru.practicum.mainservice.exception.CompilationNotFoundException;
-import ru.practicum.mainservice.exception.EventAlreadyPublishedException;
-import ru.practicum.mainservice.exception.EventCanceledCantPublishException;
-import ru.practicum.mainservice.exception.EventDateException;
-import ru.practicum.mainservice.exception.EventNotFoundException;
-import ru.practicum.mainservice.exception.EventNotPublishedException;
-import ru.practicum.mainservice.exception.EventValidationException;
-import ru.practicum.mainservice.exception.FilterValidationException;
-import ru.practicum.mainservice.exception.ParticipantLimitExceededException;
-import ru.practicum.mainservice.exception.RequestAlreadyExistsException;
-import ru.practicum.mainservice.exception.RequestSelfAttendException;
-import ru.practicum.mainservice.exception.UserAlreadyExistsException;
+import ru.practicum.mainservice.exception.*;
 import ru.practicum.stats.ErrorResponseDto;
 
 import java.io.PrintWriter;
@@ -63,9 +49,11 @@ public class ErrorHandler {
         return new ErrorResponseDto("Validation failed", "VALIDATION_ERROR", errors);
     }
 
-    @ExceptionHandler({EventDateException.class,
+    @ExceptionHandler(
+            {EventDateException.class,
             MissingServletRequestParameterException.class,
-            FilterValidationException.class})
+            FilterValidationException.class}
+    )
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponseDto errorHandlerIncorrectDataExceptions(final Exception ex, final WebRequest request) {
 
@@ -78,9 +66,11 @@ public class ErrorHandler {
         return new ErrorResponseDto("Input data is incorrect", "BAD_REQUEST", details);
     }
 
-    @ExceptionHandler({CategoryNotFoundException.class,
+    @ExceptionHandler(
+            {CategoryNotFoundException.class,
             EventNotFoundException.class,
-            CompilationNotFoundException.class})
+            CompilationNotFoundException.class}
+    )
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponseDto errorHandlerNotFound(final Exception ex, final WebRequest request) {
 
@@ -138,5 +128,4 @@ public class ErrorHandler {
 
         return new ErrorResponseDto("Internal server error", "INTERNAL_ERROR", details);
     }
-
 }

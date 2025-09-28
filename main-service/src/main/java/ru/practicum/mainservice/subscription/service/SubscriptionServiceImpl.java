@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.mainservice.event.Event;
 import ru.practicum.mainservice.event.EventRepository;
+import ru.practicum.mainservice.exception.UserNotFoundException;
 import ru.practicum.mainservice.subscription.model.Subscription;
 import ru.practicum.mainservice.subscription.model.SubscriptionDtoProjection;
 import ru.practicum.mainservice.subscription.storage.SubscriptionRepository;
@@ -34,15 +35,19 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     @Override
     @Transactional
-    public Subscription create(Long userId, Long subscriptionId) {
+    public Subscription create(Long userId, Long subscriptionId) throws UserNotFoundException {
 
         Subscription subscriptionSave = new Subscription();
 
-        Optional<User> user = userRepository.findById(userId);
-        user.ifPresent(subscriptionSave::setUser);
+        User user = userRepository.findById(userId).orElseThrow(
+                () -> new UserNotFoundException("User with id " + userId + " not found")
+        );
+        subscriptionSave.setUser(user);
 
-        Optional<User> subscription = userRepository.findById(subscriptionId);
-        subscription.ifPresent(subscriptionSave::setSubscription);
+        User subscription = userRepository.findById(subscriptionId).orElseThrow(
+                () -> new UserNotFoundException("User with id " + subscriptionId + " not found")
+        );
+        subscriptionSave.setSubscription(subscription);
 
         return subscriptionRepository.save(subscriptionSave);
     }

@@ -1,0 +1,320 @@
+{
+	"info": {
+		"_postman_id": "fcf79d21-7d94-44cb-95ed-d2a687124402",
+		"name": "Subscription",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "44840133",
+		"_collection_link": "https://iljiapolstyanoy.postman.co/workspace/Iljia-Polstyanoy's-Workspace~4e0540e3-2c8a-48f8-8d81-90a67999f9dd/collection/44840133-fcf79d21-7d94-44cb-95ed-d2a687124402?action=share&source=collection_link&creator=44840133"
+	},
+	"item": [
+		{
+			"name": "Create",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Проверяем успешное создание подписки\r",
+							"pm.test(\"Subscription created successfully\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"// Проверяем структуру ответа подписки\r",
+							"pm.test(\"Subscription response has correct structure\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData).to.have.property('id');\r",
+							"    pm.expect(jsonData).to.have.property('user');\r",
+							"    pm.expect(jsonData).to.have.property('subscription');\r",
+							"    \r",
+							"    // Сохраняем ID подписки для последующих тестов\r",
+							"    pm.collectionVariables.set(\"subscriptionId\", jsonData.id);\r",
+							"});\r",
+							"\r",
+							"// Проверяем, что подписка связывает правильных пользователей\r",
+							"pm.test(\"Subscription connects correct users\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.user.id).to.eql(pm.collectionVariables.get(\"tempUserId1\"));\r",
+							"    pm.expect(jsonData.subscription.id).to.eql(pm.collectionVariables.get(\"tempUserId2\"));\r",
+							"});\r",
+							"\r",
+							"// Дополнительная проверка - убеждаемся, что пользователи разные\r",
+							"pm.test(\"Users are different\", function () {\r",
+							"    var userId1 = pm.collectionVariables.get(\"tempUserId1\");\r",
+							"    var userId2 = pm.collectionVariables.get(\"tempUserId2\");\r",
+							"    pm.expect(userId1).to.not.eql(userId2);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// Функция для создания пользователя\r",
+							"const createUser = async (name, email) => {\r",
+							"    const userData = {\r",
+							"        name: name,\r",
+							"        email: email\r",
+							"    };\r",
+							"    \r",
+							"    const createUserRequest = {\r",
+							"        url: pm.collectionVariables.get(\"baseUrl\") + '/admin/users',\r",
+							"        method: 'POST',\r",
+							"        header: {\r",
+							"            'Content-Type': 'application/json'\r",
+							"        },\r",
+							"        body: {\r",
+							"            mode: 'raw',\r",
+							"            raw: JSON.stringify(userData)\r",
+							"        }\r",
+							"    };\r",
+							"    \r",
+							"    return new Promise((resolve, reject) => {\r",
+							"        pm.sendRequest(createUserRequest, (err, response) => {\r",
+							"            if (err) {\r",
+							"                reject(err);\r",
+							"            } else if (response.code !== 201) {\r",
+							"                reject(new Error(`Failed to create user: ${response.status} - ${response.body}`));\r",
+							"            } else {\r",
+							"                const responseData = response.json();\r",
+							"                resolve(responseData.id);\r",
+							"            }\r",
+							"        });\r",
+							"    });\r",
+							"};\r",
+							"\r",
+							"// Создаем двух пользователей\r",
+							"try {\r",
+							"    const timestamp = new Date().getTime();\r",
+							"    \r",
+							"    // Валидация: name - @Size(min = 2, max = 250)\r",
+							"    // Валидация: email - @Size(min = 6, max = 254) и @Email\r",
+							"    const userId1 = await createUser(\r",
+							"        `User${timestamp}`, // минимум 2 символа\r",
+							"        `user${timestamp}@test.com` // минимум 6 символов, валидный email\r",
+							"    );\r",
+							"    \r",
+							"    const userId2 = await createUser(\r",
+							"        `User${timestamp + 1}`,\r",
+							"        `user${timestamp + 1}@test.com`\r",
+							"    );\r",
+							"    \r",
+							"    // Обновляем URL текущего запроса\r",
+							"    const newUrl = pm.collectionVariables.get(\"baseUrl\") + `/users/${userId1}/subscriptions/${userId2}`;\r",
+							"    pm.request.url = newUrl;\r",
+							"    \r",
+							"    // Сохраняем ID для последующих тестов\r",
+							"    pm.collectionVariables.set(\"tempUserId1\", userId1);\r",
+							"    pm.collectionVariables.set(\"tempUserId2\", userId2);\r",
+							"    \r",
+							"    console.log(\"Created users:\", userId1, userId2);\r",
+							"    console.log(\"Subscription URL:\", newUrl);\r",
+							"} catch (error) {\r",
+							"    console.error(\"Failed to create users:\", error);\r",
+							"    // Можно провалить тест\r",
+							"    throw error;\r",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/users/{{userId}}/subscriptions/{{subscriptionId}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"users",
+						"{{userId}}",
+						"subscriptions",
+						"{{subscriptionId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/users/{{userId}}/subscriptions/{{subscriptionId}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"users",
+						"{{userId}}",
+						"subscriptions",
+						"{{subscriptionId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get all with params",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response is array\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData).to.be.an('array');\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/users/{{userId}}/subscriptions",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"users",
+						"{{userId}}",
+						"subscriptions"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get all without params",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response has pagination structure\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData).to.have.property('content');\r",
+							"    pm.expect(jsonData).to.have.property('totalElements');\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/users/{{userId}}/subscriptions/events?page=0&size=20",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"users",
+						"{{userId}}",
+						"subscriptions",
+						"events"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "0"
+						},
+						{
+							"key": "size",
+							"value": "20"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8080"
+		},
+		{
+			"key": "userId",
+			"value": ""
+		},
+		{
+			"key": "subscriptionId",
+			"value": "",
+			"type": "default"
+		},
+		{
+			"key": "tempUserId1",
+			"value": ""
+		},
+		{
+			"key": "tempUserId2",
+			"value": ""
+		}
+	]
+}
