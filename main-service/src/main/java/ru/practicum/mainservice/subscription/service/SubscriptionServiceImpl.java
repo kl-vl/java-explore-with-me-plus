@@ -15,7 +15,6 @@ import ru.practicum.mainservice.user.User;
 import ru.practicum.mainservice.user.UserRepository;
 
 import java.util.List;
-import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service

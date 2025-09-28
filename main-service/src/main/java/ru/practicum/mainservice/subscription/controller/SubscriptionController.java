@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.mainservice.event.Event;
+import ru.practicum.mainservice.exception.UserNotFoundException;
 import ru.practicum.mainservice.subscription.model.Subscription;
 import ru.practicum.mainservice.subscription.model.SubscriptionDtoProjection;
 import ru.practicum.mainservice.subscription.service.SubscriptionService;
@@ -23,7 +24,7 @@ public class SubscriptionController {
     public Subscription create(
             @PathVariable(name = "id") @PositiveOrZero Long userId,
             @PathVariable(name = "subscription") @PositiveOrZero Long subscriptionId
-    ) {
+    ) throws UserNotFoundException {
         return subscriptionService.create(userId, subscriptionId);
     }
 
