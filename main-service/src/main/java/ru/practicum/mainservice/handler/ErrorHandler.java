@@ -49,11 +49,9 @@ public class ErrorHandler {
         return new ErrorResponseDto("Validation failed", "VALIDATION_ERROR", errors);
     }
 
-    @ExceptionHandler(
-            {EventDateException.class,
+    @ExceptionHandler({EventDateException.class,
             MissingServletRequestParameterException.class,
-            FilterValidationException.class}
-    )
+            FilterValidationException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponseDto errorHandlerIncorrectDataExceptions(final Exception ex, final WebRequest request) {
 
@@ -66,11 +64,9 @@ public class ErrorHandler {
         return new ErrorResponseDto("Input data is incorrect", "BAD_REQUEST", details);
     }
 
-    @ExceptionHandler(
-            {CategoryNotFoundException.class,
+    @ExceptionHandler({CategoryNotFoundException.class,
             EventNotFoundException.class,
-            CompilationNotFoundException.class}
-    )
+            CompilationNotFoundException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponseDto errorHandlerNotFound(final Exception ex, final WebRequest request) {
 

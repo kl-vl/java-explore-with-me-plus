@@ -1,8 +1,6 @@
 package ru.practicum.stats;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 
 import java.util.Map;
 
