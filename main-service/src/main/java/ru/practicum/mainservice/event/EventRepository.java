@@ -9,12 +9,15 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import ru.practicum.mainservice.event.enums.EventState;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface EventRepository extends JpaRepository<Event, Long>, JpaSpecificationExecutor<Event> {
 
     Page<Event> findAllByInitiatorId(Long userId, Pageable page);
+
+    Page<Event> findAllByInitiatorIdIn(List<Long> userId, Pageable page);
 
     Optional<Event> findByIdAndInitiatorId(Long eventId, Long userId);
 
