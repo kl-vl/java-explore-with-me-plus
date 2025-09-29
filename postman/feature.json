@@ -1956,7 +1956,7 @@
 	"variable": [
 		{
 			"key": "baseUrl",
-			"value": "https://template.postman-echo.com"
+			"value": "http://localhost:8080"
 		},
 		{
 			"key": "uid",
