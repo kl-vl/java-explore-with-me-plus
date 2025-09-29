@@ -2,6 +2,7 @@ package ru.practicum.mainservice.event.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import ru.practicum.mainservice.category.CategoryDto;
@@ -13,6 +14,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
+@Builder
 public class EventDtoFull {
     private Long id;
 
