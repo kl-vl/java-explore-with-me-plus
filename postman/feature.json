@@ -1,278 +1,297 @@
 {
 	"info": {
-		"_postman_id": "fcf79d21-7d94-44cb-95ed-d2a687124402",
-		"name": "Subscription",
+		"_postman_id": "91643e74-53c0-492d-91ef-6a474dd7f609",
+		"name": "Explore with me API Feature (Subscription)",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "44840133",
-		"_collection_link": "https://iljiapolstyanoy.postman.co/workspace/Iljia-Polstyanoy's-Workspace~4e0540e3-2c8a-48f8-8d81-90a67999f9dd/collection/44840133-fcf79d21-7d94-44cb-95ed-d2a687124402?action=share&source=collection_link&creator=44840133"
+		"_exporter_id": "4009081",
+		"_collection_link": "https://test77-2960.postman.co/workspace/explore-with-me-plus~b9455346-2145-479d-8026-03dab93a5cc1/collection/4009081-91643e74-53c0-492d-91ef-6a474dd7f609?action=share&source=collection_link&creator=4009081"
 	},
 	"item": [
 		{
-			"name": "Create",
-			"event": [
+			"name": "Subscriptions",
+			"item": [
 				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"// Проверяем успешное создание подписки\r",
-							"pm.test(\"Subscription created successfully\", function () {\r",
-							"    pm.response.to.have.status(200);\r",
-							"});\r",
-							"\r",
-							"// Проверяем структуру ответа подписки\r",
-							"pm.test(\"Subscription response has correct structure\", function () {\r",
-							"    var jsonData = pm.response.json();\r",
-							"    pm.expect(jsonData).to.have.property('id');\r",
-							"    pm.expect(jsonData).to.have.property('user');\r",
-							"    pm.expect(jsonData).to.have.property('subscription');\r",
-							"    \r",
-							"    // Сохраняем ID подписки для последующих тестов\r",
-							"    pm.collectionVariables.set(\"subscriptionId\", jsonData.id);\r",
-							"});\r",
-							"\r",
-							"// Проверяем, что подписка связывает правильных пользователей\r",
-							"pm.test(\"Subscription connects correct users\", function () {\r",
-							"    var jsonData = pm.response.json();\r",
-							"    pm.expect(jsonData.user.id).to.eql(pm.collectionVariables.get(\"tempUserId1\"));\r",
-							"    pm.expect(jsonData.subscription.id).to.eql(pm.collectionVariables.get(\"tempUserId2\"));\r",
-							"});\r",
-							"\r",
-							"// Дополнительная проверка - убеждаемся, что пользователи разные\r",
-							"pm.test(\"Users are different\", function () {\r",
-							"    var userId1 = pm.collectionVariables.get(\"tempUserId1\");\r",
-							"    var userId2 = pm.collectionVariables.get(\"tempUserId2\");\r",
-							"    pm.expect(userId1).to.not.eql(userId2);\r",
-							"});"
-						],
-						"type": "text/javascript",
-						"packages": {}
-					}
-				},
-				{
-					"listen": "prerequest",
-					"script": {
-						"exec": [
-							"// Генерируем действительно уникальные данные\r",
-							"const generateUniqueData = () => {\r",
-							"    const timestamp = new Date().getTime();\r",
-							"    const random = Math.floor(Math.random() * 10000);\r",
-							"    return {\r",
-							"        name: `TestUser${timestamp}${random}`,\r",
-							"        email: `test${timestamp}${random}@example.com`\r",
-							"    };\r",
-							"};\r",
-							"\r",
-							"// Функция для создания пользователя\r",
-							"const createUser = async () => {\r",
-							"    const userData = generateUniqueData();\r",
-							"    \r",
-							"    const createUserRequest = {\r",
-							"        url: pm.collectionVariables.get(\"baseUrl\") + '/admin/users',\r",
-							"        method: 'POST',\r",
-							"        header: {\r",
-							"            'Content-Type': 'application/json'\r",
-							"        },\r",
-							"        body: {\r",
-							"            mode: 'raw',\r",
-							"            raw: JSON.stringify(userData)\r",
-							"        }\r",
-							"    };\r",
-							"    \r",
-							"    return new Promise((resolve, reject) => {\r",
-							"        pm.sendRequest(createUserRequest, (err, response) => {\r",
-							"            if (err) {\r",
-							"                reject(err);\r",
-							"            } else if (response.code !== 201) {\r",
-							"                reject(new Error(`Failed to create user: ${response.status} - ${response.body}`));\r",
-							"            } else {\r",
-							"                const responseData = response.json();\r",
-							"                resolve({\r",
-							"                    id: responseData.id,\r",
-							"                    email: userData.email,\r",
-							"                    name: userData.name\r",
-							"                });\r",
-							"            }\r",
-							"        });\r",
-							"    });\r",
-							"};\r",
-							"\r",
-							"// Создаем двух пользователей\r",
-							"try {\r",
-							"    const [user1, user2] = await Promise.all([\r",
-							"        createUser(),\r",
-							"        createUser()\r",
-							"    ]);\r",
-							"    \r",
-							"    // Обновляем URL текущего запроса\r",
-							"    const newUrl = pm.collectionVariables.get(\"baseUrl\") + `/users/${user1.id}/subscriptions/${user2.id}`;\r",
-							"    pm.request.url = newUrl;\r",
-							"    \r",
-							"    // Сохраняем данные для последующих тестов и очистки\r",
-							"    pm.collectionVariables.set(\"tempUserId1\", user1.id);\r",
-							"    pm.collectionVariables.set(\"tempUserId2\", user2.id);\r",
-							"    pm.collectionVariables.set(\"tempUserEmail1\", user1.email);\r",
-							"    pm.collectionVariables.set(\"tempUserEmail2\", user2.email);\r",
-							"    \r",
-							"    console.log(\"Created users:\", user1.id, user2.id);\r",
-							"    console.log(\"With emails:\", user1.email, user2.email);\r",
-							"} catch (error) {\r",
-							"    console.error(\"Failed to create users:\", error);\r",
-							"    throw error;\r",
-							"}"
-						],
-						"type": "text/javascript",
-						"packages": {}
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{baseUrl}}/users/{{userId}}/subscriptions/{{subscriptionId}}",
-					"host": [
-						"{{baseUrl}}"
-					],
-					"path": [
-						"users",
-						"{{userId}}",
-						"subscriptions",
-						"{{subscriptionId}}"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Delete",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Status code is 200\", function () {\r",
-							"    pm.response.to.have.status(200);\r",
-							"});"
-						],
-						"type": "text/javascript",
-						"packages": {}
-					}
-				}
-			],
-			"request": {
-				"method": "DELETE",
-				"header": [],
-				"url": {
-					"raw": "{{baseUrl}}/users/{{userId}}/subscriptions/{{subscriptionId}}",
-					"host": [
-						"{{baseUrl}}"
-					],
-					"path": [
-						"users",
-						"{{userId}}",
-						"subscriptions",
-						"{{subscriptionId}}"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Get all with params",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Status code is 200\", function () {\r",
-							"    pm.response.to.have.status(200);\r",
-							"});\r",
-							"\r",
-							"pm.test(\"Response is array\", function () {\r",
-							"    var jsonData = pm.response.json();\r",
-							"    pm.expect(jsonData).to.be.an('array');\r",
-							"});"
-						],
-						"type": "text/javascript",
-						"packages": {}
-					}
-				}
-			],
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{baseUrl}}/users/{{userId}}/subscriptions",
-					"host": [
-						"{{baseUrl}}"
-					],
-					"path": [
-						"users",
-						"{{userId}}",
-						"subscriptions"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Get all without params",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Status code is 200\", function () {\r",
-							"    pm.response.to.have.status(200);\r",
-							"});\r",
-							"\r",
-							"pm.test(\"Response has pagination structure\", function () {\r",
-							"    var jsonData = pm.response.json();\r",
-							"    pm.expect(jsonData).to.have.property('content');\r",
-							"    pm.expect(jsonData).to.have.property('totalElements');\r",
-							"});"
-						],
-						"type": "text/javascript",
-						"packages": {}
-					}
-				}
-			],
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{baseUrl}}/users/{{userId}}/subscriptions/events?page=0&size=20",
-					"host": [
-						"{{baseUrl}}"
-					],
-					"path": [
-						"users",
-						"{{userId}}",
-						"subscriptions",
-						"events"
-					],
-					"query": [
+					"name": "Create",
+					"event": [
 						{
-							"key": "page",
-							"value": "0"
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Проверяем успешное создание подписки\r",
+									"pm.test(\"Subscription created successfully\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// Проверяем структуру ответа подписки\r",
+									"pm.test(\"Subscription response has correct structure\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property('id');\r",
+									"    pm.expect(jsonData).to.have.property('user');\r",
+									"    pm.expect(jsonData).to.have.property('subscription');\r",
+									"    \r",
+									"    // Сохраняем ID подписки для последующих тестов\r",
+									"    pm.collectionVariables.set(\"subscriptionId\", jsonData.id);\r",
+									"});\r",
+									"\r",
+									"// Проверяем, что подписка связывает правильных пользователей\r",
+									"pm.test(\"Subscription connects correct users\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.user.id).to.eql(pm.collectionVariables.get(\"tempUserId1\"));\r",
+									"    pm.expect(jsonData.subscription.id).to.eql(pm.collectionVariables.get(\"tempUserId2\"));\r",
+									"});\r",
+									"\r",
+									"// Дополнительная проверка - убеждаемся, что пользователи разные\r",
+									"pm.test(\"Users are different\", function () {\r",
+									"    var userId1 = pm.collectionVariables.get(\"tempUserId1\");\r",
+									"    var userId2 = pm.collectionVariables.get(\"tempUserId2\");\r",
+									"    pm.expect(userId1).to.not.eql(userId2);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
 						},
 						{
-							"key": "size",
-							"value": "20"
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Генерируем действительно уникальные данные\r",
+									"const generateUniqueData = function() {\r",
+									"    const timestamp = new Date().getTime();\r",
+									"    const random = Math.floor(Math.random() * 10000);\r",
+									"    return {\r",
+									"        name: 'TestUser' + timestamp + random,\r",
+									"        email: 'test' + timestamp + random + '@example.com'\r",
+									"    };\r",
+									"};\r",
+									"\r",
+									"// Функция для создания пользователя\r",
+									"const createUser = function() {\r",
+									"    return new Promise(function(resolve, reject) {\r",
+									"        const userData = generateUniqueData();\r",
+									"        \r",
+									"        const createUserRequest = {\r",
+									"            url: pm.collectionVariables.get(\"baseUrl\") + '/admin/users',\r",
+									"            method: 'POST',\r",
+									"            header: {\r",
+									"                'Content-Type': 'application/json'\r",
+									"            },\r",
+									"            body: {\r",
+									"                mode: 'raw',\r",
+									"                raw: JSON.stringify(userData)\r",
+									"            }\r",
+									"        };\r",
+									"        \r",
+									"        pm.sendRequest(createUserRequest, function(err, response) {\r",
+									"            if (err) {\r",
+									"                reject(err);\r",
+									"            } else if (response.code !== 201) {\r",
+									"                reject(new Error('Failed to create user: ' + response.status + ' - ' + response.body));\r",
+									"            } else {\r",
+									"                const responseData = response.json();\r",
+									"                resolve({\r",
+									"                    id: responseData.id,\r",
+									"                    email: userData.email,\r",
+									"                    name: userData.name\r",
+									"                });\r",
+									"            }\r",
+									"        });\r",
+									"    });\r",
+									"};\r",
+									"\r",
+									"// Создаем двух пользователей\r",
+									"Promise.all([\r",
+									"    createUser(),\r",
+									"    createUser()\r",
+									"])\r",
+									".then(function(users) {\r",
+									"    const user1 = users[0];\r",
+									"    const user2 = users[1];\r",
+									"    \r",
+									"    // Обновляем URL текущего запроса\r",
+									"    const newUrl = pm.collectionVariables.get(\"baseUrl\") + '/users/' + user1.id + '/subscriptions/' + user2.id;\r",
+									"    pm.request.url = newUrl;\r",
+									"    \r",
+									"    // Сохраняем данные для последующих тестов и очистки\r",
+									"    pm.collectionVariables.set(\"tempUserId1\", user1.id);\r",
+									"    pm.collectionVariables.set(\"tempUserId2\", user2.id);\r",
+									"    pm.collectionVariables.set(\"tempUserEmail1\", user1.email);\r",
+									"    pm.collectionVariables.set(\"tempUserEmail2\", user2.email);\r",
+									"    \r",
+									"    console.log(\"Created users:\", user1.id, user2.id);\r",
+									"})\r",
+									".catch(function(error) {\r",
+									"    console.error(\"Failed to create users:\", error);\r",
+									"    throw error;\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
 						}
-					]
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users/{{userId}}/subscriptions/{{subscriptionId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"{{userId}}",
+								"subscriptions",
+								"{{subscriptionId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all without params",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response is array\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.be.an('array');\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/users/{{tempUserId1}}/subscriptions",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"{{tempUserId1}}",
+								"subscriptions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all with params",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response has pagination structure\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property('content');\r",
+									"    pm.expect(jsonData).to.have.property('totalElements');\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/users/{{tempUserId1}}/subscriptions/events?page=0&size=20",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"{{tempUserId1}}",
+								"subscriptions",
+								"events"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "0"
+								},
+								{
+									"key": "size",
+									"value": "20"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"packages": {},
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/users/{{tempUserId1}}/subscriptions/{{tempUserId2}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"{{tempUserId1}}",
+								"subscriptions",
+								"{{tempUserId2}}"
+							]
+						}
+					},
+					"response": []
 				}
-			},
-			"response": []
+			]
 		}
 	],
 	"event": [
@@ -281,8 +300,182 @@
 			"script": {
 				"type": "text/javascript",
 				"packages": {},
+				"requests": {},
 				"exec": [
-					""
+					"API = class {\r",
+					"    constructor(postman, verbose = false, baseUrl = \"http://localhost:8080\") {\r",
+					"        this.baseUrl = baseUrl;\r",
+					"        this.pm = postman;\r",
+					"        this._verbose = verbose;\r",
+					"    }\r",
+					"\r",
+					"    async addUser(user, verbose=null) {\r",
+					"        return this.post(\"/admin/users\", user, \"Ошибка при добавлении нового пользователя: \", verbose);\r",
+					"    }\r",
+					"\r",
+					"    async addCategory(category, verbose=null) {\r",
+					"        return this.post(\"/admin/categories\", category, \"Ошибка при добавлении новой категории: \", verbose);\r",
+					"    }\r",
+					"\r",
+					"    async addEvent(userId, event, verbose=null) {\r",
+					"        return this.post(\"/users/\" + userId + \"/events\", event, \"Ошибка при добавлении нового события: \", verbose);\r",
+					"    }\r",
+					"\r",
+					"    async addCompilation(compilation, verbose=null) {\r",
+					"        return this.post(\"/admin/compilations\", compilation, \"Ошибка при добавлении новой подборки: \", verbose);\r",
+					"    }\r",
+					"\r",
+					"    async publishParticipationRequest(eventId, userId, verbose=null) {\r",
+					"        return this.post('/users/' + userId + '/requests?eventId=' + eventId, null, \"Ошибка при добавлении нового запроса на участие в событии\", verbose);\r",
+					"    }\r",
+					"\r",
+					"    async publishEvent(eventId, verbose=null) {\r",
+					"        return this.patch('/admin/events/' + eventId, {stateAction: \"PUBLISH_EVENT\"}, \"Ошибка при публикации события\", verbose);\r",
+					"    }\r",
+					"    \r",
+					"    async rejectEvent(eventId, verbose=null) {\r",
+					"        return this.patch('/admin/events/' + eventId, {stateAction: \"REJECT_EVENT\"}, \"Ошибка при отмене события\", verbose);\r",
+					"    }\r",
+					"\r",
+					"    async acceptParticipationRequest(eventId, userId, reqId, verbose=null) {\r",
+					"        return this.patch('/users/' + userId + '/events/' + eventId + '/requests', {requestIds:[reqId], status: \"CONFIRMED\"}, \"Ошибка при принятии заявки на участие в событии\", verbose);\r",
+					"    }\r",
+					"\r",
+					"    async findCategory(catId, verbose=null) {\r",
+					"        return this.get('/categories/' + catId, null, \"Ошибка при поиске категории по id\", verbose);\r",
+					"    }\r",
+					"\r",
+					"    async findCompilation(compId, verbose=null) {\r",
+					"        return this.get('/compilations/' + compId, null, \"Ошибка при поиске подборки по id\", verbose);\r",
+					"    }\r",
+					"\r",
+					"    async findEvent(eventId, verbose=null) {\r",
+					"        return this.get('/events/' + eventId, null, \"Ошибка при поиске события по id\", verbose);\r",
+					"    }\r",
+					"\r",
+					"    async findUser(userId, verbose=null) {\r",
+					"        return this.get('/admin/users?ids=' + userId, null, \"Ошибка при поиске пользователя по id\", verbose);\r",
+					"    }\r",
+					"\r",
+					"    async post(path, body, errorText = \"Ошибка при выполнении post-запроса: \", verbose=null) {\r",
+					"        return this.sendRequest(\"POST\", path, body, errorText, verbose);\r",
+					"    }\r",
+					"\r",
+					"    async patch(path, body = null, errorText = \"Ошибка при выполнении patch-запроса: \", verbose=null) {\r",
+					"        return this.sendRequest(\"PATCH\", path, body, errorText, verbose);\r",
+					"    }\r",
+					"\r",
+					"    async get(path, body = null, errorText = \"Ошибка при выполнении get-запроса: \", verbose=null) {\r",
+					"        return this.sendRequest(\"GET\", path, body, errorText, verbose);\r",
+					"    }\r",
+					"    async sendRequest(method, path, body=null, errorText = \"Ошибка при выполнении запроса: \", verbose=null) {\r",
+					"        return new Promise((resolve, reject) => {\r",
+					"            verbose = verbose == null ? this._verbose : verbose;\r",
+					"            const request = {\r",
+					"                url: this.baseUrl + path,\r",
+					"                method: method,\r",
+					"                body: body == null ? \"\" : JSON.stringify(body),\r",
+					"                header: { \"Content-Type\": \"application/json\" },\r",
+					"            };\r",
+					"            if(verbose) {\r",
+					"                console.log(\"Отправляю запрос: \", request);\r",
+					"            }\r",
+					"\r",
+					"            try {\r",
+					"                this.pm.sendRequest(request, (error, response) => {\r",
+					"                    if(error || (response.code >= 400 && response.code <= 599)) {\r",
+					"                        let err = error ? error : JSON.stringify(response.json());\r",
+					"                        console.error(\"При выполнении запроса к серверу возникла ошика.\\n\", err,\r",
+					"                             \"\\nДля отладки проблемы повторите такой же запрос к вашей программе \" + \r",
+					"                             \"на локальном компьютере. Данные запроса:\\n\", JSON.stringify(request));\r",
+					"\r",
+					"                        reject(new Error(errorText + err));\r",
+					"                    }\r",
+					"                    if(verbose) {\r",
+					"                        console.log(\"Результат обработки запроса: код состояния - \", response.code, \", тело: \", response.json());\r",
+					"                    }\r",
+					"                    if (response.stream.length === 0){\r",
+					"                        reject(new Error('Отправлено пустое тело ответа'))\r",
+					"                    }else{\r",
+					"                        resolve(response.json());\r",
+					"                    }\r",
+					"                });\r",
+					"                \r",
+					"            } catch(err) {\r",
+					"                if(verbose) {\r",
+					"                    console.error(errorText, err);\r",
+					"                }\r",
+					"                return Promise.reject(err);\r",
+					"            }\r",
+					"        });\r",
+					"    }\r",
+					"};\r",
+					"\r",
+					"RandomUtils = class {\r",
+					"    constructor() {}\r",
+					"\r",
+					"    getUser() {\r",
+					"        return {\r",
+					"            name: pm.variables.replaceIn('{{$randomFullName}}'),\r",
+					"            email: pm.variables.replaceIn('{{$randomEmail}}')\r",
+					"        };\r",
+					"    }\r",
+					"\r",
+					"    getCategory() {\r",
+					"        return {\r",
+					"            name: pm.variables.replaceIn('{{$randomWord}}') + Math.floor(Math.random() * 10000 * Math.random()).toString()\r",
+					"        };\r",
+					"    }\r",
+					"\r",
+					"    getEvent(categoryId) {\r",
+					"        return {\r",
+					"            annotation: pm.variables.replaceIn('{{$randomLoremParagraph}}'),\r",
+					"            category: categoryId,\r",
+					"            description: pm.variables.replaceIn('{{$randomLoremParagraphs}}'),\r",
+					"            eventDate: this.getFutureDateTime(),\r",
+					"            location: {\r",
+					"                lat: parseFloat(pm.variables.replaceIn('{{$randomLatitude}}')),\r",
+					"                lon: parseFloat(pm.variables.replaceIn('{{$randomLongitude}}')),\r",
+					"            },\r",
+					"            paid: pm.variables.replaceIn('{{$randomBoolean}}'),\r",
+					"            participantLimit: pm.variables.replaceIn('{{$randomInt}}'),\r",
+					"            requestModeration: pm.variables.replaceIn('{{$randomBoolean}}'),\r",
+					"            title: pm.variables.replaceIn('{{$randomLoremSentence}}'),\r",
+					"        }\r",
+					"    }\r",
+					"\r",
+					"    getCompilation(...eventIds) {\r",
+					"        return {\r",
+					"            title: pm.variables.replaceIn('{{$randomLoremSentence}}').slice(0, 50),\r",
+					"            pinned: pm.variables.replaceIn('{{$randomBoolean}}'),\r",
+					"            events: eventIds\r",
+					"        };\r",
+					"    }\r",
+					"\r",
+					"\r",
+					"    getFutureDateTime(hourShift = 5, minuteShift=0, yearShift=0) {\r",
+					"        let moment = require('moment');\r",
+					"\r",
+					"        let m = moment();\r",
+					"        m.add(hourShift, 'hour');\r",
+					"        m.add(minuteShift, 'minute');\r",
+					"        m.add(yearShift, 'year');\r",
+					"\r",
+					"        return m.format('YYYY-MM-DD HH:mm:ss');\r",
+					"    }\r",
+					"\r",
+					"    getWord(length = 1) {\r",
+					"        let result = '';\r",
+					"        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';\r",
+					"        const charactersLength = characters.length;\r",
+					"        let counter = 0;\r",
+					"        while (counter < length) {\r",
+					"            result += characters.charAt(Math.floor(Math.random() * charactersLength));\r",
+					"            counter += 1;\r",
+					"        }\r",
+					"        return result;\r",
+					"    }\r",
+					"}"
 				]
 			}
 		},
@@ -291,6 +484,7 @@
 			"script": {
 				"type": "text/javascript",
 				"packages": {},
+				"requests": {},
 				"exec": [
 					""
 				]
@@ -308,8 +502,7 @@
 		},
 		{
 			"key": "subscriptionId",
-			"value": "",
-			"type": "default"
+			"value": ""
 		},
 		{
 			"key": "tempUserId1",
