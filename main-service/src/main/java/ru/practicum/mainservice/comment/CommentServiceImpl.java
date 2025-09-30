@@ -125,7 +125,7 @@ public class CommentServiceImpl implements CommentService {
                         "Комментарий c ID %d не найден для события с ID %d или у вас нет прав для редактирования"
                                 .formatted(commentDto.getId(), eventId)));
         // При редактировании комментария пользователем возвращаем на модерацию
-        Optional.ofNullable(commentDto.getText()).ifPresent(text-> {
+        Optional.ofNullable(commentDto.getText()).ifPresent(text -> {
             comment.setText(text);
             comment.setStatus(CommentStatus.PENDING);
         });
@@ -162,7 +162,7 @@ public class CommentServiceImpl implements CommentService {
         log.info("Main-service. deleteComment userId = {}, eventId = {}, commentId = {} ", userId, eventId, commentId);
 
         if (!commentRepository.existsByIdAndEventIdAndAuthorId(commentId, eventId, userId)) {
-            throw new  CommentNotFoundException(
+            throw new CommentNotFoundException(
                     "Комментарий c ID %d не найден для события с ID %d или у вас нет прав для для удаления"
                             .formatted(commentId, eventId));
         }
