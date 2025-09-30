@@ -124,11 +124,13 @@ public class CommentServiceImpl implements CommentService {
                 .orElseThrow(() -> new CommentNotFoundException(
                         "Комментарий c ID %d не найден для события с ID %d или у вас нет прав для редактирования"
                                 .formatted(commentDto.getId(), eventId)));
+
         // При редактировании комментария пользователем возвращаем на модерацию
         Optional.ofNullable(commentDto.getText()).ifPresent(text -> {
             comment.setText(text);
             comment.setStatus(CommentStatus.PENDING);
         });
+
         Comment updatedComment = commentRepository.save(comment);
         log.info("Main-service. updateComment success id = {} ", updatedComment.getId());
         return commentMapper.toDto(updatedComment);
