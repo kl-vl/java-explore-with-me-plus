@@ -20,6 +20,7 @@ import ru.practicum.mainservice.user.UserRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -123,11 +124,11 @@ public class CommentServiceImpl implements CommentService {
                 .orElseThrow(() -> new CommentNotFoundException(
                         "Комментарий c ID %d не найден для события с ID %d или у вас нет прав для редактирования"
                                 .formatted(commentDto.getId(), eventId)));
-        if (commentDto.getText() != null) {
-            comment.setText(commentDto.getText());
-            // При редактировании комментария пользователем возвращаем на модерацию
+        // При редактировании комментария пользователем возвращаем на модерацию
+        Optional.ofNullable(commentDto.getText()).ifPresent(text-> {
+            comment.setText(text);
             comment.setStatus(CommentStatus.PENDING);
-        }
+        });
         Comment updatedComment = commentRepository.save(comment);
         log.info("Main-service. updateComment success id = {} ", updatedComment.getId());
         return commentMapper.toDto(updatedComment);
