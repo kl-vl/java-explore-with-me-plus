@@ -27,7 +27,6 @@ public class StatsController {
     private final StatsService service;
 
     @GetMapping("/stats")
-    //  @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     public List<ViewStatsDto> getStats(@RequestParam LocalDateTime start,
                                        @RequestParam LocalDateTime end,
                                        @RequestParam(required = false, defaultValue = "") List<String> uris,
